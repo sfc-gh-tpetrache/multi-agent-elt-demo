@@ -1,7 +1,19 @@
 -- Frostbyte AI - SV Certification: history table + procedure
 -- ============================================================================
--- DEV: simplified (no ACCOUNT_USAGE checks — metadata has ~2h latency on fresh objects)
--- PROD: full version with C1/C2 checks via ACCOUNT_USAGE (objects are stable by deploy time)
+-- Two procedure variants:
+--
+-- 1. SIMPLIFIED (default, used in both DEV and fresh PROD deploys):
+--    Skips ACCOUNT_USAGE checks. Sets the CERTIFIED tag directly.
+--    Use when objects were just created (ACCOUNT_USAGE has ~2h latency).
+--
+-- 2. FULL (commented out below, for established PROD environments):
+--    Runs C1 (upstream lineage) and C2 (PII masking coverage) checks via
+--    SNOWFLAKE.ACCOUNT_USAGE. Only certifies if all checks pass.
+--    Use after objects have been stable for 2+ hours.
+--
+-- For first-time deploys where ACCOUNT_USAGE has no data yet, you can also
+-- certify manually:
+--    ALTER SEMANTIC VIEW <FQN> SET TAG GOVERNANCE.CERTIFIED = 'true';
 -- ============================================================================
 
 USE ROLE SYSADMIN;
@@ -92,11 +104,11 @@ BEGIN
   FROM SNOWFLAKE.ACCOUNT_USAGE.OBJECT_DEPENDENCIES d
   LEFT JOIN SNOWFLAKE.ACCOUNT_USAGE.TAG_REFERENCES t
     ON t.OBJECT_NAME = d.REFERENCED_OBJECT_NAME
-   AND t.OBJECT_DATABASE = d.REFERENCED_DATABASE_NAME
+   AND t.OBJECT_DATABASE = d.REFERENCED_DATABASE
    AND t.TAG_NAME = 'CERTIFIED'
    AND t.TAG_VALUE = 'true'
   WHERE d.REFERENCING_OBJECT_NAME = SPLIT_PART(:SV_NAME, '.', 3)
-    AND d.REFERENCING_DATABASE_NAME = SPLIT_PART(:SV_NAME, '.', 1)
+    AND d.REFERENCING_DATABASE = SPLIT_PART(:SV_NAME, '.', 1)
     AND d.REFERENCED_OBJECT_DOMAIN IN ('DYNAMIC TABLE', 'TABLE', 'VIEW')
     AND t.TAG_NAME IS NULL;
 

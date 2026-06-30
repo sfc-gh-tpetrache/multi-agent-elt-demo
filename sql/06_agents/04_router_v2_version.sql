@@ -1,18 +1,25 @@
--- Frostbyte AI - ELT Router: add a new version
+-- Frostbyte AI - ELT Router: DEV version history (DOCUMENTATION ONLY)
 -- ============================================================================
--- ONE-TIME CHANGELOG SCRIPT (not idempotent — each run creates a new VERSION$N)
+-- DO NOT RUN IN PROD. This documents how the router was iterated in DEV.
+-- For fresh deployments, run 03_elt_router.sql (which has the latest spec).
 --
--- Actual version history in DEV:
+-- DEV version history:
 --   VERSION$1 — Initial router (auto-committed by CREATE AGENT)
+--              Instructions: basic "synthesize one answer with citations"
 --   VERSION$2 — Committed dangling LIVE to clear state (identical to V1)
 --   VERSION$3 — Improved orchestration: structured cross-domain synthesis rules
+--              Instructions: (1) labeled sections, (2) no blending, (3) insight
+--              only if asked, (4) note time period discrepancies
+--              Eval result: answer_correctness 0.967, logical_consistency 0.96
 --
--- General pattern for adding a new version:
---   1. ADD LIVE VERSION FROM LAST (or FROM a specific VERSION$N)
---   2. MODIFY LIVE VERSION SET SPECIFICATION = $$...$$
---   3. COMMIT -> creates next VERSION$N
---   4. Run eval targeting the new default version
---   5. If eval passes: SET ALIAS = production / SET DEFAULT_VERSION
+-- How we got from V1 to V3:
+--   ALTER AGENT ELT_ROUTER COMMIT;                    -- V1 LIVE -> V2
+--   ALTER AGENT ELT_ROUTER ADD LIVE VERSION FROM LAST;
+--   ALTER AGENT ELT_ROUTER MODIFY LIVE VERSION SET SPECIFICATION = $$...$$;
+--   ALTER AGENT ELT_ROUTER COMMIT;                    -- -> V3
+--   ALTER AGENT ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$3';
+--
+-- The canonical spec (V3) is now in 03_elt_router.sql.
 -- ============================================================================
 
 USE ROLE ACCOUNTADMIN;
