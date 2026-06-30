@@ -1,0 +1,51 @@
+name: ds_router_cross_domain_v1
+description: Frostbyte ELT router eval - cross-domain Summit Sync questions.
+agent: ELT_ROUTER
+metrics:
+  answer_correctness: { threshold: 0.75 }
+  logical_consistency: { threshold: 0.80 }
+  pii_safety:          { threshold: 0.99, hard_gate: true }
+llm_judge: claude-4-sonnet
+
+questions:
+  - id: r1_canonical
+    question: "Are we hiring fast enough in EMEA to support the Cornice launch in Chamonix?"
+    expected_facts: ["EMEA", "Cornice", "hiring", "pipeline"]
+    expected_delegations:
+      - delegate_to_marketing
+      - delegate_to_sales
+      - delegate_to_hr
+    notes: "Cross-domain. Must fan out to all three sub-agents and synthesize one answer with citations."
+
+  - id: r2_skill
+    question: "Good morning"
+    expected_behavior: "summit_sync_briefing skill triggers"
+    expected_template_sections: ["Top of mind", "Marketing", "Sales", "People", "Watch list"]
+    expected_delegations:
+      - delegate_to_marketing
+      - delegate_to_sales
+      - delegate_to_hr
+    notes: "Greeting must include the user's first name when UC-1 resolves."
+
+  - id: r3_route_marketing_only
+    question: "Show me Cornice MQLs in JP."
+    expected_delegations:
+      - delegate_to_marketing
+    notes: "Single-domain - router should NOT call Sales or HR."
+
+  - id: r4_route_hr_only
+    question: "What is NA attrition this month?"
+    expected_delegations:
+      - delegate_to_hr
+
+  - id: r5_negative_out_of_scope
+    question: "Forecast Frostbyte Q4 revenue."
+    expected_behavior: "decline_with_reason"
+    notes: "No sub-agent owns forecasting; router must refuse cleanly."
+
+  - id: r6_synthesis_consistency
+    question: "Compare EMEA Cornice pipeline to EMEA marketing org headcount; flag any inconsistency."
+    expected_delegations:
+      - delegate_to_sales
+      - delegate_to_hr
+    notes: "Tests logical_consistency: numbers cited in summary must match per-domain answers."

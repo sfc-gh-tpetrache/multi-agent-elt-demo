@@ -1,0 +1,96 @@
+name: frostbyte-agent-cicd
+
+on:
+  pull_request:
+    paths:
+      - 'multi-agent-pipeline/sql/06_agents/**'
+      - 'multi-agent-pipeline/agent-skills/**'
+      - 'multi-agent-pipeline/eval/**'
+      - 'multi-agent-pipeline/registries/**'
+  workflow_dispatch:
+    inputs:
+      agent:
+        description: 'Agent name (e.g. SALES_AGENT, ELT_ROUTER)'
+        required: true
+      git_tag:
+        description: 'Git tag to promote (e.g. prod-7)'
+        required: true
+
+jobs:
+  validate-dev:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      SNOWFLAKE_CONNECTION_NAME: frostbyte_dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install snowflake-connector-python pyyaml
+      - name: Determine changed agent
+        id: agent
+        run: |
+          # Simplified: derive AGENT from PR title or path
+          echo "agent=SALES_AGENT" >> $GITHUB_OUTPUT
+      - name: Deploy candidate to DEV
+        run: |
+          python multi-agent-pipeline/scripts/deploy_candidate.py \
+            --agent ${{ steps.agent.outputs.agent }} \
+            --connection $SNOWFLAKE_CONNECTION_NAME \
+            --git-ref branches/${GITHUB_HEAD_REF} \
+            --alias dev
+      - name: Run evaluation
+        id: eval
+        run: |
+          python multi-agent-pipeline/scripts/run_evaluation_ci.py \
+            --agent ${{ steps.agent.outputs.agent }} \
+            --version dev \
+            --dataset dataset.yaml \
+            --connection $SNOWFLAKE_CONNECTION_NAME
+      - name: Quality gate
+        run: |
+          python multi-agent-pipeline/scripts/quality_gate.py \
+            --run-name $(date -u +run_%Y%m%d_%H%M%S) \
+            --connection $SNOWFLAKE_CONNECTION_NAME
+
+  promote-prod:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SNOWFLAKE_CONNECTION_NAME: frostbyte_prod
+      THRESHOLD_ANSWER_CORRECTNESS: '0.85'
+      THRESHOLD_LOGICAL_CONSISTENCY: '0.85'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install snowflake-connector-python pyyaml
+      - name: ADD VERSION from prod tag
+        run: |
+          python multi-agent-pipeline/scripts/deploy_candidate.py \
+            --agent ${{ inputs.agent }} \
+            --connection $SNOWFLAKE_CONNECTION_NAME \
+            --git-ref tags/${{ inputs.git_tag }} \
+            --alias staging
+      - name: Run PROD eval
+        run: |
+          python multi-agent-pipeline/scripts/run_evaluation_ci.py \
+            --agent ${{ inputs.agent }} \
+            --version staging \
+            --dataset dataset.yaml \
+            --connection $SNOWFLAKE_CONNECTION_NAME
+      - name: Quality gate (PROD thresholds)
+        run: |
+          python multi-agent-pipeline/scripts/quality_gate.py \
+            --run-name $(date -u +run_%Y%m%d_%H%M%S) \
+            --connection $SNOWFLAKE_CONNECTION_NAME
+      - name: Promote alias -> production
+        run: |
+          python multi-agent-pipeline/scripts/promote_version.py \
+            --agent ${{ inputs.agent }} \
+            --version LAST \
+            --alias production \
+            --connection $SNOWFLAKE_CONNECTION_NAME

@@ -1,0 +1,64 @@
+-- Frostbyte AI - Role grants on databases / schemas
+-- ============================================================================
+-- Run AFTER 00_databases_warehouses_roles.sql.
+-- Run twice: once with USE DATABASE FROSTBYTE_AI_DEV, once with FROSTBYTE_AI_PROD.
+-- ============================================================================
+
+USE ROLE ACCOUNTADMIN;
+
+-- ----------------------------------------------------------------------------
+-- Database-level USAGE for all consumers
+-- ----------------------------------------------------------------------------
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE ELT_RL;
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE ELT_MKT_RL;
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE ELT_SALES_RL;
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE ELT_HR_RL;
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE HR_PII_RL;
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE EVAL_SVC_RL;
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE CERTIFIER_RL;
+GRANT USAGE ON DATABASE IDENTIFIER(CURRENT_DATABASE()) TO ROLE DATA_LOAD_RL;
+
+-- ----------------------------------------------------------------------------
+-- Ownership of RAW to DATA_LOAD_RL (load role); never granted to humans
+-- ----------------------------------------------------------------------------
+GRANT OWNERSHIP ON SCHEMA RAW TO ROLE DATA_LOAD_RL REVOKE CURRENT GRANTS;
+GRANT USAGE ON SCHEMA RAW TO ROLE HR_PII_RL;    -- HR_PII_RL can read RAW for legitimate cases
+GRANT USAGE ON SCHEMA RAW TO ROLE CERTIFIER_RL; -- certification reads RAW lineage
+
+-- ----------------------------------------------------------------------------
+-- STG / INT / MARTS / SEMANTIC: read access for the relevant ELT role
+-- (granted explicitly by domain to keep RBAC clean)
+-- ----------------------------------------------------------------------------
+GRANT USAGE ON SCHEMA STG       TO ROLE EVAL_SVC_RL;
+GRANT USAGE ON SCHEMA INT       TO ROLE EVAL_SVC_RL;
+GRANT USAGE ON SCHEMA MARTS     TO ROLE ELT_MKT_RL;
+GRANT USAGE ON SCHEMA MARTS     TO ROLE ELT_SALES_RL;
+GRANT USAGE ON SCHEMA MARTS     TO ROLE ELT_HR_RL;
+GRANT USAGE ON SCHEMA MARTS     TO ROLE EVAL_SVC_RL;
+GRANT USAGE ON SCHEMA SEMANTIC  TO ROLE ELT_MKT_RL;
+GRANT USAGE ON SCHEMA SEMANTIC  TO ROLE ELT_SALES_RL;
+GRANT USAGE ON SCHEMA SEMANTIC  TO ROLE ELT_HR_RL;
+GRANT USAGE ON SCHEMA SEMANTIC  TO ROLE EVAL_SVC_RL;
+
+-- AGENTS schema
+GRANT USAGE ON SCHEMA AGENTS    TO ROLE ELT_RL;
+GRANT USAGE ON SCHEMA AGENTS    TO ROLE ELT_MKT_RL;
+GRANT USAGE ON SCHEMA AGENTS    TO ROLE ELT_SALES_RL;
+GRANT USAGE ON SCHEMA AGENTS    TO ROLE ELT_HR_RL;
+GRANT USAGE ON SCHEMA AGENTS    TO ROLE EVAL_SVC_RL;
+
+-- SEARCH schema
+GRANT USAGE ON SCHEMA SEARCH    TO ROLE ELT_HR_RL;
+
+-- GOVERNANCE: certifier owns the cert procedure + tag; everyone else reads audit views
+GRANT USAGE ON SCHEMA GOVERNANCE TO ROLE CERTIFIER_RL;
+GRANT USAGE ON SCHEMA GOVERNANCE TO ROLE EVAL_SVC_RL;
+GRANT USAGE ON SCHEMA GOVERNANCE TO ROLE HR_PII_RL;
+
+-- EVAL: managed by EVAL_SVC_RL
+GRANT OWNERSHIP ON SCHEMA EVAL TO ROLE EVAL_SVC_RL REVOKE CURRENT GRANTS;
+
+-- ARTIFACTS: Git repo + seed stages
+GRANT USAGE ON SCHEMA ARTIFACTS TO ROLE DATA_LOAD_RL;
+GRANT USAGE ON SCHEMA ARTIFACTS TO ROLE EVAL_SVC_RL;
+GRANT USAGE ON SCHEMA ARTIFACTS TO ROLE ELT_RL;

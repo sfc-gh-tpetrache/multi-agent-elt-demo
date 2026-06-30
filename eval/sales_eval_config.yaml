@@ -1,0 +1,11 @@
+evaluation:
+  agent_params:
+    agent_name: "FROSTBYTE_AI_DEV.AGENTS.SALES_AGENT"
+    agent_type: "CORTEX AGENT"
+  source_metadata:
+    type: "dataset"
+    dataset_name: "FROSTBYTE_AI_DEV.EVAL.DS_SALES_EVAL"
+
+metrics:
+  - "answer_correctness"
+  - "logical_consistency"

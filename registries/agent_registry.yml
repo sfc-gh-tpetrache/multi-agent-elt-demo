@@ -1,0 +1,51 @@
+# Frostbyte AI - Agent registry
+# ============================================================================
+# Tracks which agent version is aliased to which env and which Git tag
+# produced it. CI keeps this in sync with the SHOW VERSIONS IN AGENT output.
+# ============================================================================
+
+agents:
+  - name: MARKETING_AGENT
+    db: FROSTBYTE_AI_DEV
+    schema: AGENTS
+    aliases:
+      dev:        VERSION$1
+      production: null
+    consumes_semantic_views:
+      - SEMANTIC.SV_MKT_CAMPAIGN_ROI
+    mcp_server: MARKETING_AGENT_SERVER
+
+  - name: SALES_AGENT
+    db: FROSTBYTE_AI_DEV
+    schema: AGENTS
+    aliases:
+      dev:        VERSION$1
+      production: null
+    consumes_semantic_views:
+      - SEMANTIC.SV_SALES_PIPELINE
+    mcp_server: SALES_AGENT_SERVER
+
+  - name: HR_AGENT
+    db: FROSTBYTE_AI_DEV
+    schema: AGENTS
+    aliases:
+      dev:        VERSION$1
+      production: null
+    consumes_semantic_views:
+      - SEMANTIC.SV_HR_HEADCOUNT
+    cortex_search_services:
+      - SEARCH.CSS_HR_POLICIES
+    mcp_server: HR_AGENT_SERVER
+
+  - name: ELT_ROUTER
+    db: FROSTBYTE_AI_DEV
+    schema: AGENTS
+    aliases:
+      dev:        VERSION$1
+      production: null
+    delegates_to:
+      - MARKETING_AGENT_SERVER
+      - SALES_AGENT_SERVER
+      - HR_AGENT_SERVER
+    skills:
+      - summit_sync_briefing

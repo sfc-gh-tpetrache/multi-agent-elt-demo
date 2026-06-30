@@ -1,0 +1,56 @@
+# Frostbyte AI - Certified Semantic Views registry
+# ============================================================================
+# Source of truth for which SVs are eligible for which agents, per environment.
+# CI updates this file when CERTIFY_SEMANTIC_VIEW passes.
+# CI fails any PR where an agent references an SV missing from this file
+# for the target environment.
+# ============================================================================
+
+semantic_views:
+  - sv: FROSTBYTE_AI_DEV.SEMANTIC.SV_MKT_CAMPAIGN_ROI
+    env: DEV
+    certified_at: null
+    git_tag: null
+    consumed_by_agents:
+      - MARKETING_AGENT
+      - ELT_ROUTER
+
+  - sv: FROSTBYTE_AI_DEV.SEMANTIC.SV_SALES_PIPELINE
+    env: DEV
+    certified_at: null
+    git_tag: null
+    consumed_by_agents:
+      - SALES_AGENT
+      - ELT_ROUTER
+
+  - sv: FROSTBYTE_AI_DEV.SEMANTIC.SV_HR_HEADCOUNT
+    env: DEV
+    certified_at: null
+    git_tag: null
+    consumed_by_agents:
+      - HR_AGENT
+      - ELT_ROUTER
+
+  - sv: FROSTBYTE_AI_PROD.SEMANTIC.SV_MKT_CAMPAIGN_ROI
+    env: PROD
+    certified_at: null
+    git_tag: null
+    consumed_by_agents:
+      - MARKETING_AGENT
+      - ELT_ROUTER
+
+  - sv: FROSTBYTE_AI_PROD.SEMANTIC.SV_SALES_PIPELINE
+    env: PROD
+    certified_at: null
+    git_tag: null
+    consumed_by_agents:
+      - SALES_AGENT
+      - ELT_ROUTER
+
+  - sv: FROSTBYTE_AI_PROD.SEMANTIC.SV_HR_HEADCOUNT
+    env: PROD
+    certified_at: null
+    git_tag: null
+    consumed_by_agents:
+      - HR_AGENT
+      - ELT_ROUTER
