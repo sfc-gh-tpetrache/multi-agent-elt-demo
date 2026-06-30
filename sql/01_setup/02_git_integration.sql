@@ -11,7 +11,7 @@ USE ROLE ACCOUNTADMIN;
 -- ----------------------------------------------------------------------------
 CREATE API INTEGRATION IF NOT EXISTS GIT_API_INT
   API_PROVIDER     = git_https_api
-  API_ALLOWED_PREFIXES = ('https://github.com/')
+  API_ALLOWED_PREFIXES = ('https://github.com/sfc-gh-tpetrache/')
   ENABLED          = TRUE
   COMMENT          = 'Frostbyte demo Git integration';
 
@@ -22,7 +22,7 @@ GRANT USAGE ON INTEGRATION GIT_API_INT TO ROLE SYSADMIN;
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE GIT REPOSITORY ARTIFACTS.GIT_REPO
   API_INTEGRATION = GIT_API_INT
-  ORIGIN          = 'https://github.com/REPLACE_ME/frostbyte-ai-demo'
+  ORIGIN          = 'https://github.com/sfc-gh-tpetrache/multi-agent-elt-demo.git'
   COMMENT         = 'Source of truth for agent specs, skills, eval datasets, SQL';
 
 ALTER GIT REPOSITORY ARTIFACTS.GIT_REPO FETCH;
