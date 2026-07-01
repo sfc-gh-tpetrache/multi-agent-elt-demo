@@ -188,7 +188,17 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
 1. **Open Snowflake Intelligence in Snowsight, role `ELT_RL`.** Type *"Good morning"*. Skill triggers, three parallel `CORTEX_AGENT_RUN` calls, single Summit Sync brief.
 2. **Cross-domain ad-hoc**: *"Are we hiring fast enough in EMEA to support the Cornice launch in Chamonix?"* — all three sub-agents.
 3. **HR Search + Analyst**: *"What is our parental leave policy for EMEA, and how many employees are in EMEA?"* — HR agent uses both tools; redacted citations show [NAME], [EMAIL].
-4. **Per-agent mask shape**: Run the following in a worksheet to show how the same data looks under different contexts:
+4. **Per-agent mask shape**: Run the following in a worksheet to show how the same data looks under different contexts.
+
+   > **Architecture note:** Masking policies are attached at the RAW layer. Dynamic Tables
+   > materialize downstream using the DT owner's role (ACCOUNTADMIN), which does NOT have
+   > HR_PII_RL — so DTs store already-masked values (SHA2 hashes). This is intentional:
+   > PII never lands in clear text in marts or warehouses. To demonstrate role-based
+   > differentiation at query time, use POLICY_CONTEXT against the RAW table (below).
+   > If you query dim_employee directly, work_email is always hashed — proving that even
+   > if a semantic view exposes the column, defense-in-depth at the pipeline level prevents
+   > PII leakage.
+
    ```sql
    USE ROLE ACCOUNTADMIN;
    USE DATABASE FROSTBYTE_AI_PROD;

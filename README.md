@@ -1,6 +1,27 @@
 # Frostbyte ELT Multi-Agent Demo
 
-End-to-end build of a Snowflake Intelligence multi-agent system for the Frostbyte ELT.
+**Goal:** Demonstrate that the governed path is the easy path to scale AI agents in production — and that Snowflake makes this straightforward with native primitives for identity, policy, versioning, observability, and evaluation.
+
+This build implements a complete multi-agent CI/CD pipeline for the fictional Frostbyte company: a router agent orchestrating Marketing, Sales, and HR sub-agents, each backed by certified semantic views, protected by agent-aware governance policies, versioned in Git, and gated by automated evaluations before promotion.
+
+## Design Principles Coverage
+
+This demo maps to the [12 Design Principles for Scaling Enterprise Agents](https://github.com/sfc-gh-tpetrache/agents-design-principles/blob/main/design-principles-v2.md). The governed path is the scripted path — every compliance requirement is built into the tooling, not bolted on as an approval queue.
+
+| # | Principle | Demo implementation | Snowflake primitives |
+|---|-----------|--------------------|--------------------|
+| P1 | Outcomes before agents | Each agent has a defined purpose + eval quality thresholds (`answer_correctness >= 0.75`, `logical_consistency >= 0.80`, `pii_safety >= 0.99`) that gate promotion | `EXECUTE_AI_EVALUATION`, quality_gate.py |
+| P2 | No anonymous agents | Agent identity via `SYS_CONTEXT(AGENT_NAME/AGENT_DATABASE)`. Policies reference agent identity. Identity travels through router → MCP → sub-agent chain | `SYS_CONTEXT('SNOWFLAKE$CURRENT')`, `IS_AGENT_ACTIVATED` |
+| P3 | One front door, one control plane | ELT_ROUTER is the single user-facing agent. One AGENTS schema, one GOVERNANCE schema, one Git repo | `CREATE AGENT`, `CREATE MCP SERVER`, schema design |
+| P4 | Specs as code | Agent specs in SQL files, skills in Git, version history tracked in `04_router_v2_version.sql`, promotion from Git tags | `CREATE GIT REPOSITORY`, `GIT_INTEGRATION` skill source |
+| P5 | Reuse before build | MCP servers expose sub-agents for reuse by any consumer (router, external clients, other agents). Skills shared via Git | `CREATE MCP SERVER`, `CORTEX_AGENT_RUN` tool type |
+| P6 | One vocabulary, enforced at launch | Semantic views enforce shared business terms (channels, regions, product lines). Certification tag validates definitions | `CREATE SEMANTIC VIEW`, `TAG GOVERNANCE.CERTIFIED` |
+| P7 | Least context, least privilege | Each agent only accesses its own semantic view. RAP limits row visibility. Masking hides PII at pipeline level. Role separation (ELT_MKT_RL, ELT_SALES_RL, ELT_HR_RL) | Masking policies, Row Access Policies, role hierarchy |
+| P8 | Gates on inputs, outputs, approvals | Input gate: masking on RAW tables. Output gate: agent instructions refuse out-of-scope questions. Certification gate blocks uncertified SVs | `MP_MASK_*`, `RAP_HR_EMPLOYEE_SCOPE`, agent instructions |
+| P9 | Trust earned and re-earned | Eval runs before promotion (DEV). Quality gate enforces thresholds. Continuous eval possible via scheduled tasks | `EXECUTE_AI_EVALUATION`, `EVAL_RUN_HISTORY`, quality_gate.py |
+| P10 | If you can't see it, you can't trust it | Per-agent observability events, PII audit trail, certification history, eval trend queries | `SNOWFLAKE.LOCAL.AI_OBSERVABILITY_EVENTS`, `GET_AI_OBSERVABILITY_EVENTS` |
+| P11 | Lifecycle is mandatory | Agent versioning (VERSION$1→$N), aliases (production), COMMIT workflow, rollback in one statement, sunset task placeholder | `ALTER AGENT ADD VERSION`, `SET ALIAS`, `SET DEFAULT_VERSION` |
+| P12 | Pave the road | Env-aware scripts (run same SQL in DEV or PROD), runbook automation, deploy_candidate.py, quality_gate.py — compliant path = scripted path | `CURRENT_DATABASE()`, `EXECUTE IMMEDIATE`, CI/CD scripts |
 
 ## What's in this folder
 
@@ -56,8 +77,8 @@ Two connections are expected (named however you like):
 - `frostbyte_dev` -> `FROSTBYTE_AI_DEV` database
 - `frostbyte_prod` -> `FROSTBYTE_AI_PROD` database
 
-The scripts use unqualified database references where possible so they work in either env via `USE DATABASE`.
+The scripts use `CURRENT_DATABASE()` for FQN resolution, so the same script works in either environment.
 
 ## Demo runbook
 
-See `assets/build_plan.md` Step 9 for the 9-beat live demo script.
+See [RUNBOOK.md](RUNBOOK.md) for the full live demo script (9 beats), PROD promotion flow, and inspection queries.
