@@ -93,4 +93,4 @@ The scripts use `CURRENT_DATABASE()` for FQN resolution, so the same script work
 
 ## Demo runbook
 
-See [RUNBOOK.md](RUNBOOK.md) for the full live demo script (9 beats), PROD promotion flow, and inspection queries.
+See [RUNBOOK.md](RUNBOOK.md) for the full live demo script, PROD promotion flow, and inspection queries.

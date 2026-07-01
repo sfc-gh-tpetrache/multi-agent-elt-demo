@@ -194,8 +194,7 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
    **b.** Switch to role `ELT_RL` → same agent, same prompt *"Good morning"*
    - Expected: Full 3-section briefing (Marketing + Sales + People).
    - `domain = 'global'` → all three MCP calls fan out in parallel.
-
-   ![alt text](image-1.png)
+   
 
    **c.** (Optional) Switch to `SYSADMIN` → *"Good morning"*
    - Expected: Refusal ("This briefing is available to Frostbyte ELT roles only").
