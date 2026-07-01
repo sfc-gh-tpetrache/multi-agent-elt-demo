@@ -1,12 +1,24 @@
 # Frostbyte ELT Multi-Agent Demo
 
-**Goal:** Demonstrate that the governed path is the easy path to scale AI agents in production — and that Snowflake makes this straightforward with native primitives for identity, policy, versioning, observability, and evaluation.
+**Goal:** This demo shows the governed path to building enterprise multi-agent systems on Snowflake — where compliance is built into the tooling, not bolted on after.
 
-This build implements a complete multi-agent CI/CD pipeline for the fictional Frostbyte company: a router agent orchestrating Marketing, Sales, and HR sub-agents, each backed by certified semantic views, protected by agent-aware governance policies, versioned in Git, and gated by automated evaluations before promotion.
+## What this demo shows
+
+- **One router, three domain agents** — automatic routing based on intent, with a Git-sourced skill for personalized briefings
+- **RBAC everywhere** — domain roles only access their corresponding sub-agent; the ELT role sees everything; the skill itself adapts its output based on `CURRENT_ROLE()`
+- **Certified semantic views** — agents can only query data models that passed a certification gate (tag-based, auditable)
+- **AI_REDACT on unstructured data** — PII is stripped before it enters Cortex Search; agents never see raw names/emails
+- **Agent-aware masking policies** — the same table shows different data depending on whether a human, an agent, or a privileged role queries it
+- **CI/CD gated by eval thresholds** — agents must pass `answer_correctness >= 0.75`, `logical_consistency >= 0.80`, `pii_safety >= 0.99` before promotion to production
+- **Versioning + rollback** — immutable versions, alias-based promotion, one-statement rollback
+- **Full observability** — per-agent traces, cost attribution, and certification history
+- **MCP servers** — each sub-agent is also exposed as an MCP server, making it callable from external tools (Cursor, Claude Desktop) via the same governed endpoint
+
+All reproducible from a single Git repo with environment-aware scripts.
 
 ## Design Principles Coverage
 
-This demo maps to the [12 Design Principles for Scaling Enterprise Agents](https://github.com/sfc-gh-tpetrache/agents-design-principles/blob/main/design-principles-v2.md). The governed path is the scripted path — every compliance requirement is built into the tooling, not bolted on as an approval queue.
+This demo maps to the [12 Design Principles for Scaling Enterprise Agents](https://github.com/sfc-gh-tpetrache/agents-design-principles/blob/main/design-principles-v2.md). 
 
 | # | Principle | Demo implementation | Snowflake primitives |
 |---|-----------|--------------------|--------------------|
