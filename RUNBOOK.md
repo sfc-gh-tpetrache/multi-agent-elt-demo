@@ -185,9 +185,23 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
 
 ## Live demo script (9 beats)
 
-1. **Open Snowflake Intelligence in Snowsight, role `ELT_RL`.** Type *"Good morning"*. Skill triggers, three parallel `CORTEX_AGENT_RUN` calls, single Summit Sync brief.
+1. **Role-based skill routing**:
+
+   **a.** Switch to role `ELT_SALES_RL` in Snowsight → open ELT Router → type *"Good morning"*
+   - Expected: Sales-only briefing (pipeline coverage, pre-orders). No Marketing/HR sections.
+   - The skill resolves `domain = 'sales'` from CURRENT_ROLE() and only delegates to the Sales sub-agent.
+
+   **b.** Switch to role `ELT_RL` → same agent, same prompt *"Good morning"*
+   - Expected: Full 3-section briefing (Marketing + Sales + People).
+   - `domain = 'global'` → all three MCP calls fan out in parallel.
+
+   ![alt text](image-1.png)
+
+   **c.** (Optional) Switch to `SYSADMIN` → *"Good morning"*
+   - Expected: Refusal ("This briefing is available to Frostbyte ELT roles only").
 2. **Cross-domain ad-hoc**: *"Are we hiring fast enough in EMEA to support the Cornice launch in Chamonix?"* — all three sub-agents.
 3. **HR Search + Analyst**: *"What is our parental leave policy for EMEA, and how many employees are in EMEA?"* — HR agent uses both tools; redacted citations show [NAME], [EMAIL].
+![alt text](image.png) 
 4. **Per-agent mask shape**: Run the following in a worksheet to show how the same data looks under different contexts.
 
    > **Architecture note:** Masking policies are attached at the RAW layer. Dynamic Tables
@@ -231,7 +245,9 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
       FROM FROSTBYTE_AI_PROD.RAW.HR_EMPLOYEES LIMIT 5;
    ```
    Then show the masking policy body: `DESCRIBE MASKING POLICY GOVERNANCE.MP_MASK_EMAIL;`
-5. **Per-agent row access**: Sales-agent query against `dim_employee` -> 0 rows; HR-agent path -> rows.
+5. **Metric accuracy test**: Ask the ELT Router *"What is the total pre-order ARR for Cornice vs Glacier?"*
+   - Expected: Cornice ~$159.8M, Glacier ~$165.8M (verifiable via `SELECT product_line, SUM(pre_order_arr_usd) FROM MARTS.AGG_SALES_PIPELINE_DAILY GROUP BY product_line`).
+   - Router delegates to Sales sub-agent, which queries `sv_sales_pipeline`. Validates `answer_correctness` in the eval dataset.
 6. **Certification gate**:
    ```sql
    ALTER SEMANTIC VIEW SEMANTIC.SV_HR_HEADCOUNT UNSET TAG GOVERNANCE.CERTIFIED;
@@ -240,8 +256,7 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
    ```sql
    CALL GOVERNANCE.CERTIFY_SEMANTIC_VIEW('FROSTBYTE_AI_DEV.SEMANTIC.SV_HR_HEADCOUNT', 'demo-recertify');
    ```
-7. **RBAC switch**: connect as `ELT_HR_RL`; HR agent works, others denied.
-8. **Promote** (live demo of version promotion):
+7. **Promote** (live demo of version promotion):
    ```sql
    ALTER GIT REPOSITORY ARTIFACTS.GIT_REPO FETCH;
    ALTER AGENT FROSTBYTE_AI_PROD.AGENTS.SALES_AGENT ADD LIVE VERSION FROM LAST;
@@ -249,7 +264,7 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
    ALTER AGENT FROSTBYTE_AI_PROD.AGENTS.SALES_AGENT COMMIT COMMENT = 'demo promotion';
    ALTER AGENT FROSTBYTE_AI_PROD.AGENTS.SALES_AGENT MODIFY VERSION LAST SET ALIAS = production;
    ```
-9. **Rollback** one statement:
+8. **Rollback** one statement:
    ```sql
    ALTER AGENT FROSTBYTE_AI_PROD.AGENTS.SALES_AGENT
      MODIFY VERSION VERSION$1 SET ALIAS = production;
