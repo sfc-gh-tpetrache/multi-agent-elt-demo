@@ -25,34 +25,49 @@ User says any of:
 - "Monday brief" / "Monday briefing"
 - "Catch me up"
 
-## Step 1 — Resolve the user (run FIRST)
+## Step 1 — Resolve the caller's scope (run FIRST)
 
 Run the SQL in [queries/user_context.sql](queries/user_context.sql). This returns:
-- `first_name`
-- `title`
-- `region`  (NA / EMEA / JP, or NULL for global executives)
-- `org_filter` (a predicate to scope the brief to the exec's org)
+- `user_name` — the Snowflake user
+- `role_name` — the active role
+- `domain` — one of: `global`, `sales`, `marketing`, `hr`, `unauthorized`
 
-If 0 rows are returned, omit the user's first name in the greeting.
+If `domain = 'unauthorized'`, refuse the briefing politely:
+> "This briefing is available to Frostbyte ELT roles only. Please switch to an authorized role."
+
+Do not proceed to Step 2 if unauthorized.
 
 ## Step 2 — Greeting
 
-`## Good Morning, <first_name>` (or `## Good Morning` if name unknown).
+`## Good Morning, <user_name>` (use the Snowflake username).
 
 Single sentence intro referencing the current week (`week of <Monday date>`) and
-the exec's role / region.
+the caller's domain scope (e.g., "your Sales briefing" or "your global briefing").
 
-## Step 3 — Fan out in parallel to the three sub-agents
+## Step 3 — Delegate based on domain
 
-Use the router's delegation tools. Pass the exec's `region` as a constraint
-when populated; otherwise ask for the global view.
+Use the router's delegation tools. Only call sub-agents matching the caller's
+domain. This mirrors the RBAC grants — calling an unauthorized MCP server would
+fail anyway.
 
+**If domain = 'global':** fan out to ALL three in parallel:
 - `delegate_to_marketing` -> *"Cornice and Glacier campaign ROI, lead counts,
-  and conversion rates for {region}. Break down by product line."*
+  and conversion rates. Break down by product line."*
 - `delegate_to_sales` -> *"Pipeline coverage by channel (DTC, Wholesale,
-  Frostbyte Pro) for {region} this week; pre-orders by product line."*
-- `delegate_to_hr` -> *"Current headcount by org unit for {region}; attrition
-  last 30 days."*
+  Frostbyte Pro); pre-orders by product line."*
+- `delegate_to_hr` -> *"Current headcount by org unit; attrition last 30 days."*
+
+**If domain = 'sales':** delegate ONLY to:
+- `delegate_to_sales` -> *"Pipeline coverage by channel (DTC, Wholesale,
+  Frostbyte Pro); pre-orders by product line; top accounts."*
+
+**If domain = 'marketing':** delegate ONLY to:
+- `delegate_to_marketing` -> *"Cornice and Glacier campaign ROI, lead counts,
+  and conversion rates. Break down by product line and channel."*
+
+**If domain = 'hr':** delegate ONLY to:
+- `delegate_to_hr` -> *"Current headcount by org unit and region; attrition
+  last 30 days; any policy updates."*
 
 If any sub-agent reports "this metric is not currently certified", **do not
 fabricate**. State the gap and recommend contacting the data owner.

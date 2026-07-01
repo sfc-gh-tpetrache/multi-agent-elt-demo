@@ -1,29 +1,22 @@
--- UC-1: Resolve the calling user to a dim_employee row for personalization.
--- Used by the summit_sync_briefing skill. Returns 0 or 1 row.
+-- UC-1: Resolve the caller's scope via CURRENT_ROLE().
+-- Used by the summit_sync_briefing skill. Always returns exactly 1 row.
 --
--- The session is running under the agent's owner role for tool execution,
--- but the original user is exposed via the SESSION namespace.
+-- Maps the active role to a domain that determines which sub-agents
+-- the skill delegates to. This mirrors the RBAC grants on MCP servers:
+--   ELT_RL        -> global  (all 3 MCP servers granted)
+--   ELT_SALES_RL  -> sales   (only SALES_AGENT_SERVER granted)
+--   ELT_MKT_RL    -> marketing (only MARKETING_AGENT_SERVER granted)
+--   ELT_HR_RL     -> hr      (only HR_AGENT_SERVER granted)
+--   Other         -> unauthorized (refuse briefing)
 
-WITH me AS (
-  SELECT TRIM(LOWER(email)) AS email
-  FROM SNOWFLAKE.ACCOUNT_USAGE.USERS
-  WHERE name = SYS_CONTEXT('SNOWFLAKE$SESSION', 'CURRENT_USER')
-  ORDER BY created_on DESC
-  LIMIT 1
-)
 SELECT
-  emp.first_name,
-  emp.title,
-  emp.region,
+  CURRENT_USER()  AS user_name,
+  CURRENT_ROLE()  AS role_name,
   CASE
-    WHEN emp.level = 'C-LEVEL'              THEN 'TRUE'             -- C-level sees global
-    WHEN emp.region IS NULL                 THEN 'TRUE'
-    ELSE 'region = ''' || emp.region || ''''                          -- everyone else scoped
-  END AS org_filter,
-  emp.employee_id
-FROM me
-JOIN MARTS.dim_employee emp
-  ON LOWER(emp.work_email) = me.email
-WHERE emp.active_status = 1
-ORDER BY emp.snapshot_date DESC
-LIMIT 1;
+    WHEN CURRENT_ROLE() = 'ELT_RL'       THEN 'global'
+    WHEN CURRENT_ROLE() = 'ELT_SALES_RL' THEN 'sales'
+    WHEN CURRENT_ROLE() = 'ELT_MKT_RL'   THEN 'marketing'
+    WHEN CURRENT_ROLE() = 'ELT_HR_RL'    THEN 'hr'
+    ELSE 'unauthorized'
+  END AS domain
+;
