@@ -45,7 +45,8 @@ SELECT
   e.employee_id, e.first_name, e.last_name, e.full_name,
   e.work_email, e.org_unit, e.manager_id, e.manager_chain,
   e.title, e.level, e.region, e.active_status,
-  e.hire_date, e.termination_date, e.snapshot_date
+  e.hire_date, e.termination_date, e.snapshot_date,
+  e.base_salary
 FROM STG.stg_hr_employees e;
 
 -- ============================================================================

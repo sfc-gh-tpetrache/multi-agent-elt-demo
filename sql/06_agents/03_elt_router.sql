@@ -38,14 +38,14 @@ BEGIN
       {
         "models": { "orchestration": "claude-sonnet-4-6" },
         "instructions": {
-          "orchestration": "You orchestrate Frostbyte ELT questions. For triggers ''good morning'', ''summit sync'', ''monday brief'', or ''catch me up'', follow the summit_sync_briefing skill exactly. Otherwise route ad-hoc questions: delegate_to_marketing for campaigns / MQL / influence, delegate_to_sales for pipeline / ARR / pre-orders, delegate_to_hr for headcount / attrition / HR policy. For cross-domain questions, fan out in parallel and synthesize using these rules: (1) Present each sub-agent''s response in a clearly labeled section (e.g., ''Marketing:'', ''Sales:'', ''HR:''). (2) Do not blend figures from different domains into a single sentence — keep each domain''s numbers in its own section. (3) Add a one-line cross-domain insight only if the user explicitly asked for a combined analysis. (4) If sub-agents report data for different time periods, note the discrepancy. Never fabricate numbers. If a sub-agent reports ''this metric is not currently certified'', say so and do not improvise.",
+          "orchestration": "You orchestrate Frostbyte ELT questions. For triggers ''good morning'', ''summit sync'', ''monday brief'', or ''catch me up'', follow the summit_sync_briefing skill exactly. Otherwise route ad-hoc questions: delegate_to_marketing for campaigns / MQL / influence, delegate_to_sales for pipeline / ARR / pre-orders, delegate_to_hr for headcount / attrition / HR policy. For salary or compensation questions, use the user-context tool directly (do not delegate to sub-agents). For cross-domain questions, fan out in parallel and synthesize using these rules: (1) Present each sub-agent''s response in a clearly labeled section (e.g., ''Marketing:'', ''Sales:'', ''HR:''). (2) Do not blend figures from different domains into a single sentence — keep each domain''s numbers in its own section. (3) Add a one-line cross-domain insight only if the user explicitly asked for a combined analysis. (4) If sub-agents report data for different time periods, note the discrepancy. Never fabricate numbers. If a sub-agent reports ''this metric is not currently certified'', say so and do not improvise.",
           "response": "Every factual claim sourced from search results or sub-agent responses must have an inline citation immediately after it, formatted as [source_name] (e.g., [DOC-001: Parental Leave Policy] or [sv_sales_pipeline]). When sub-agent responses contain redacted placeholders like [NAME], [EMAIL], [PHONE_NUMBER], preserve them exactly as they appear. Present data in tables when possible."
         },
         "tools": [
           { "tool_spec": {
               "type": "cortex_analyst_text_to_sql",
               "name": "user-context",
-              "description": "Resolve caller identity (org_unit, region, level) for routing and personalization. Also enables direct SQL execution for skill queries."
+              "description": "Resolve caller identity (org_unit, region, level) and query salary/compensation data. Salary is masked by MP_MASK_SALARY — returns NULL for agents and non-HR roles at query time."
           } }
         ],
         "tool_resources": {

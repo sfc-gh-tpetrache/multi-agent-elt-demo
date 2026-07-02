@@ -203,19 +203,15 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
 ![alt text](image.png) 
 4. **Per-agent mask shape**: Run the following in a worksheet to show how the same data looks under different contexts.
 
-   > **Architecture note:** Masking policies are attached at the RAW layer. Dynamic Tables
-   > materialize downstream using the DT owner's role (ACCOUNTADMIN), which does NOT have
-   > HR_PII_RL — so DTs store already-masked values (SHA2 hashes). This is intentional:
-   > PII never lands in clear text in marts or warehouses. To demonstrate role-based
-   > differentiation at query time, use POLICY_CONTEXT against the RAW table (below).
-   > If you query dim_employee directly, work_email is always hashed — proving that even
-   > if a semantic view exposes the column, defense-in-depth at the pipeline level prevents
-   > PII leakage.
+   > **Architecture note:** `base_salary` masking is applied at the MART level (`dim_employee`)
+   > so the DT stores clear values and the policy fires at query time. This enables role-based
+   > differentiation: HR_PII_RL sees real salary, agents see NULL, regular users see NULL.
+   > Other PII columns (email, phone, SSN) remain masked at the RAW layer (pipeline-level defense).
 
    ```sql
    USE ROLE ACCOUNTADMIN;
    USE DATABASE FROSTBYTE_AI_PROD;
-   USE SCHEMA RAW;
+   USE SCHEMA MARTS;
 
    -- What the HR agent sees (partial masking: first name visible, email domain visible, salary NULL)
    EXECUTE USING POLICY_CONTEXT(
@@ -225,7 +221,7 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
      SNOWFLAKE$CURRENT_ACTIVATED_AGENT_TYPES => ('CORTEX_AGENT')
    )
    AS SELECT employee_id, full_name, work_email, base_salary
-      FROM FROSTBYTE_AI_PROD.RAW.HR_EMPLOYEES LIMIT 5;
+      FROM FROSTBYTE_AI_PROD.MARTS.DIM_EMPLOYEE LIMIT 5;
 
    -- What the HR_PII_RL role sees (clear text — full access)
    EXECUTE USING POLICY_CONTEXT(
@@ -233,7 +229,7 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
      SNOWFLAKE$SESSION_ACTIVATED_ROLES => ('HR_PII_RL')
    )
    AS SELECT employee_id, full_name, work_email, base_salary
-      FROM FROSTBYTE_AI_PROD.RAW.HR_EMPLOYEES LIMIT 5;
+      FROM FROSTBYTE_AI_PROD.MARTS.DIM_EMPLOYEE LIMIT 5;
 
    -- What a regular user sees (SHA2 hashed — no access)
    EXECUTE USING POLICY_CONTEXT(
@@ -241,9 +237,19 @@ ALTER AGENT AGENTS.ELT_ROUTER SET DEFAULT_VERSION = 'VERSION$1';
      SNOWFLAKE$SESSION_ACTIVATED_ROLES => ('ELT_HR_RL')
    )
    AS SELECT employee_id, full_name, work_email, base_salary
-      FROM FROSTBYTE_AI_PROD.RAW.HR_EMPLOYEES LIMIT 5;
+      FROM FROSTBYTE_AI_PROD.MARTS.DIM_EMPLOYEE LIMIT 5;
    ```
-   Then show the masking policy body: `DESCRIBE MASKING POLICY GOVERNANCE.MP_MASK_EMAIL;`
+   Then show the masking policy body: `DESCRIBE MASKING POLICY GOVERNANCE.MP_MASK_SALARY;`
+
+   **Live agent test:** Ask the ELT Router *"What is the average base salary by department?"*
+   - The router queries `SV_USER_CONTEXT` directly (salary routing instruction).
+   - `MP_MASK_SALARY` fires at query time → agent sees NULL for all salary values.
+   - Agent explains: "Salary data is masked by policy and not available in this context."
+   - Then run the same query in a Snowsight worksheet as `HR_PII_RL` → real values appear.
+   - This proves agent-aware masking enforcement at query time on the same underlying data.
+
+   ![alt text](image-1.png)
+   
 5. **Metric accuracy test**: Ask the ELT Router *"What is the total pre-order ARR for Cornice vs Glacier?"*
    - Expected: Cornice ~$159.8M, Glacier ~$165.8M (verifiable via `SELECT product_line, SUM(pre_order_arr_usd) FROM MARTS.AGG_SALES_PIPELINE_DAILY GROUP BY product_line`).
    - Router delegates to Sales sub-agent, which queries `sv_sales_pipeline`. Validates `answer_correctness` in the eval dataset.
