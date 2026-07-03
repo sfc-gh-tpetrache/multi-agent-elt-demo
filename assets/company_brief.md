@@ -1,6 +1,6 @@
 # Frostbyte Outfitters — Company Brief
 
-A storyline for the ELT Snowflake Intelligence multi-agent build.
+A storyline for the ELT Snowflake CoWork multi-agent build.
 
 ---
 
@@ -49,7 +49,7 @@ The CDO put it bluntly at the last QBR: *"We're paying a million dollars a year 
 
 Frostbyte's CDO and Head of AI Platform have a different bet. They've spent the last two quarters building **`SNOW_CERTIFIED`** — a single, governed, Dynamic-Tables-powered analytics layer in Snowflake — and certified semantic views for the metrics that matter (pipeline ARR, MQL-to-pipeline influence, headcount-as-of-date).
 
-The next step: **give every ELT member a personal Snowflake Intelligence agent that already knows their org, their definitions, and their access rights.**
+The next step: **give every ELT member a personal Snowflake CoWork agent that already knows their org, their definitions, and their access rights.**
 
 The vision in one sentence:
 > *"Every Frostbyte exec walks into Summit Sync with a Snowflake agent that has already pulled the right numbers, knows what's missing, and refuses to guess — and every IC analyst gets those 6 Friday hours back."*

@@ -1,12 +1,12 @@
 # Frostbyte ELT Multi-Agent Demo
 
-> Companion to [company_brief.md](company_brief.md). Snowflake Intelligence multi-agent system: 3 sub-agents (Marketing, Sales, HR) with optional MCP servers for external access + router using direct `cortex_agent_run` tools with stage-sourced *Summit Sync Briefing* skill + HR Cortex Search over `AI_REDACT`-cleaned policies. Agent-aware governance using `SYS_CONTEXT` (`IS_AGENT_ACTIVATED` + `AGENT_NAME` / `AGENT_TYPE` / `AGENT_DATABASE`) plus a semantic-view certification chain (procedure + tag + registry + sunset task). CI eval gate, native Cortex Agent versioning, Git-driven DEV -> PROD promotion.
+> Companion to [company_brief.md](company_brief.md). Snowflake CoWork multi-agent system: 3 sub-agents (Marketing, Sales, HR) with optional MCP servers for external access + router using direct `cortex_agent_run` tools with stage-sourced *Summit Sync Briefing* skill + HR Cortex Search over `AI_REDACT`-cleaned policies. Agent-aware governance using `SYS_CONTEXT` (`IS_AGENT_ACTIVATED` + `AGENT_NAME` / `AGENT_TYPE` / `AGENT_DATABASE`) plus a semantic-view certification chain (procedure + tag + registry + sunset task). CI eval gate, native Cortex Agent versioning, Git-driven DEV -> PROD promotion.
 
 ---
 
 ## The Story (in 60 seconds)
 
-Frostbyte Outfitters sells snow gear via DTC, Wholesale, and Frostbyte Pro. Three orgs spend ~140 hours/week prepping Monday's "Summit Sync" ELT meeting. We replace it with three Snowflake Intelligence sub-agents (Marketing, Sales, HR) orchestrated by a router using direct `cortex_agent_run` tools, plus a stage-sourced *Summit Sync Briefing* skill. Trust by construction: certified semantic views over Dynamic Tables, PII masked at the column level and redacted inline for unstructured docs, **agent-aware** policies that enforce extra rules whenever a session is invoked by an agent, and a **semantic-view certification chain** that the runtime itself enforces. CI eval gate, native Cortex Agent versioning, Git-driven DEV -> PROD promotion.
+Frostbyte Outfitters sells snow gear via DTC, Wholesale, and Frostbyte Pro. Three orgs spend ~140 hours/week prepping Monday's "Summit Sync" ELT meeting. We replace it with three Snowflake CoWork sub-agents (Marketing, Sales, HR) orchestrated by a router using direct `cortex_agent_run` tools, plus a stage-sourced *Summit Sync Briefing* skill. Trust by construction: certified semantic views over Dynamic Tables, PII masked at the column level and redacted inline for unstructured docs, **agent-aware** policies that enforce extra rules whenever a session is invoked by an agent, and a **semantic-view certification chain** that the runtime itself enforces. CI eval gate, native Cortex Agent versioning, Git-driven DEV -> PROD promotion.
 
 **Demo highlights:**
 1. *"Good morning"* triggers the personalized Summit Sync brief via the skill.
@@ -22,7 +22,7 @@ Full story: [company_brief.md](company_brief.md).
 
 ```mermaid
 flowchart LR
-  user[ELT user in Snowsight<br>Snowflake Intelligence] --> router[ELT_ROUTER]
+  user[ELT user in Snowsight<br>Snowflake CoWork] --> router[ELT_ROUTER]
   router -- skill: summit_sync_briefing<br>stage-sourced --> skill[Briefing playbook + queries]
   router -- delegate_to_marketing<br>cortex_agent_run --> mkt[MARKETING_AGENT]
   router -- delegate_to_sales<br>cortex_agent_run --> sales[SALES_AGENT]
@@ -385,7 +385,7 @@ ALTER AGENT FROSTBYTE_AI_PROD.AGENTS.SALES_AGENT MODIFY VERSION VERSION$2 SET AL
 
 ### Step 9 — Live demo run + rollback
 
-1. **Open Snowflake Intelligence as `ELT_RL`.** Type *"Good morning"* — skill triggers, three parallel `CORTEX_AGENT_RUN` calls, single Summit Sync brief.
+1. **Open Snowflake CoWork as `ELT_RL`.** Type *"Good morning"* — skill triggers, three parallel `CORTEX_AGENT_RUN` calls, single Summit Sync brief.
 2. **Cross-domain ad-hoc**: *"Are we hiring fast enough in EMEA to support the Cornice launch?"*.
 3. **HR Search + Analyst**: *"What is our parental leave policy for EMEA, and how many EMEA hires are pending?"* — HR agent uses both tools; redacted citations.
 4. **Per-agent mask shape**: same `HR_PII_RL` user, two different agents, two different mask forms — show the policy body live.
@@ -441,7 +441,7 @@ ALTER AGENT FROSTBYTE_AI_PROD.AGENTS.SALES_AGENT MODIFY VERSION VERSION$2 SET AL
 8. Create router agent with 3 direct `cortex_agent_run` tools + stage-sourced skill.
 9. CI eval gate (2 metrics: `answer_correctness`, `logical_consistency`); per-agent eval datasets in `EVAL` schema. Run from `USE SCHEMA AGENTS`.
 10. Wire DEV -> PROD promotion via Git tag + `ADD VERSION FROM @stage` + alias flip (deferred until Git repo is set up).
-11. Run live demo (the 9-step script above) in Snowflake Intelligence.
+11. Run live demo (the 9-step script above) in Snowflake CoWork.
 
 ---
 
