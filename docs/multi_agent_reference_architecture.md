@@ -261,6 +261,7 @@ Agent interactions are written to `SNOWFLAKE.LOCAL.AI_OBSERVABILITY_EVENTS` (con
 | Chart rendering (`data_to_chart`) does not propagate through MCP | `[VALIDATED]` | P2, P4 | Render charts client-side from returned data; charts only in CoWork/native surfaces |
 | MCP transport timeout (~60s) is fixed/not configurable; long queries return Gateway Timeout | `[VALIDATED]` | P2, P4 | Keep tool calls under ~60s; see workaround in SNOW-3440878 |
 | CoWork main agent not yet callable via API | `[NEEDS INTERNAL VALIDATION]` | P2, P4 | Roadmap: main agent to be exposed via APIs by end of month |
+| Agent identity for auditing: cannot fully audit actions an agent takes on behalf of a user | `[NEEDS INTERNAL VALIDATION]` | Governance / observability | Correlate app-side per-user logs with Snowflake events; roadmap PLT-56536 |
 
 > Confirm all `[INFERENCE]` and roadmap items against internal Jira/Slack before quoting to a customer. `[NEEDS INTERNAL VALIDATION]`
 
