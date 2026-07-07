@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frostbyte — Executive Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sf-blue: #29B5E8;
+  --sf-dark: #11567F;
+  --sf-navy: #0D2B45;
+  --sf-deep: #0A2540;
+  --sf-cyan-soft: #7DD3F0;
+  --sf-star: #71D3DC;
+  --sf-white: #FFFFFF;
+  --sf-ice: #E8F4FD;
+  --sf-green: #22c55e;
+  --sf-warn: #e07030;
+  --sf-red: #ef4444;
+  --accent: var(--sf-blue);
+  --accent-glow: rgba(41,181,232,0.2);
+  --glass: rgba(255,255,255,0.05);
+  --glass-border: rgba(255,255,255,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:#000;overflow:hidden;width:100vw;height:100vh}
+
+#nav-banner{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;height:44px;background:rgba(3,10,20,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);padding:0 1.8rem}
+#nav-banner .nav-logo{display:flex;align-items:center;gap:0.6rem;margin-right:2rem}
+#nav-banner .nav-logo img{height:18px;filter:brightness(0) invert(1);opacity:0.7}
+#nav-banner .nav-logo span{font-size:clamp(0.65rem,0.9vw,0.8rem);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5)}
+#nav-sections{display:flex;gap:0;flex:1;height:100%}
+.nav-section{display:flex;align-items:center;gap:0.5rem;height:100%;padding:0 1.2rem;cursor:pointer;position:relative;transition:all 0.25s}
+.nav-section::after{content:'';position:absolute;bottom:0;left:0.5rem;right:0.5rem;height:2px;background:transparent;border-radius:1px;transition:background 0.25s}
+.nav-section.active::after{background:var(--sf-blue)}
+.nav-section:hover::after{background:rgba(41,181,232,0.4)}
+.nav-section .nav-num{font-size:clamp(0.55rem,0.75vw,0.7rem);font-weight:800;color:rgba(255,255,255,0.2);width:clamp(18px,2.2vw,24px);height:clamp(18px,2.2vw,24px);border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.1);transition:all 0.25s}
+.nav-section.active .nav-num{color:var(--sf-blue);border-color:rgba(41,181,232,0.4);background:rgba(41,181,232,0.1)}
+.nav-section .nav-title{font-size:clamp(0.62rem,0.85vw,0.78rem);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:rgba(255,255,255,0.35);transition:color 0.25s}
+.nav-section.active .nav-title{color:rgba(255,255,255,0.85)}
+.nav-section:hover .nav-title{color:rgba(255,255,255,0.6)}
+.nav-dots{display:flex;gap:4px;margin-left:0.5rem}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.1);cursor:pointer;transition:all 0.25s}
+.nav-dot.active{background:var(--sf-blue);box-shadow:0 0 6px rgba(41,181,232,0.5)}
+.nav-dot:hover{background:rgba(41,181,232,0.4)}
+.nav-sep{width:1px;height:20px;background:rgba(255,255,255,0.06);margin:0 0.3rem;align-self:center}
+#slide-counter{font-size:clamp(0.58rem,0.8vw,0.72rem);font-weight:600;letter-spacing:0.1em;color:rgba(255,255,255,0.2);margin-left:auto;white-space:nowrap}
+
+.slide{position:absolute;inset:0;display:none;align-items:center;justify-content:center;overflow:hidden;opacity:0;transition:opacity 0.5s ease;padding-top:80px}
+.slide.active{display:flex;opacity:1}
+.slide-bg{position:absolute;inset:0;z-index:0}
+.overlay{position:absolute;inset:0;z-index:1;pointer-events:none}
+.overlay-vignette{background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 40%,rgba(0,0,0,0.5) 100%)}
+
+@keyframes aurora{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.bg-title{background:linear-gradient(-40deg,#010c17,#071e36,#0c3058,#041220,#08203a);background-size:400% 400%;animation:aurora 20s ease infinite}
+.bg-context{background:radial-gradient(ellipse 80% 80% at 50% 120%,rgba(224,112,48,0.1) 0%,transparent 55%),radial-gradient(ellipse 80% 60% at 50% -10%,rgba(41,181,232,0.12) 0%,transparent 60%),linear-gradient(170deg,#03111f 0%,#0a2540 50%,#050f1e 100%)}
+.bg-summary{background:linear-gradient(160deg,#030d1b 0%,#081b30 50%,#030c1a 100%)}
+.bg-transform{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(41,181,232,0.08) 0%,transparent 50%),linear-gradient(165deg,#030d1b 0%,#071a2d 50%,#030c1a 100%)}
+.bg-proof{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(41,181,232,0.08) 0%,transparent 50%),linear-gradient(165deg,#030d1b 0%,#071a2d 50%,#030c1a 100%)}
+.bg-diff{background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(41,181,232,0.06) 0%,transparent 50%),linear-gradient(160deg,#030d1b 0%,#081b30 50%,#030c1a 100%)}
+.bg-cta{background:linear-gradient(-40deg,#020e1d,#0a2540,#0f3560,#04121e,#071e38);background-size:400% 400%;animation:aurora 16s ease infinite}
+.bg-uc{background:radial-gradient(ellipse 70% 60% at 30% 40%,rgba(41,181,232,0.08) 0%,transparent 55%),linear-gradient(160deg,#040e1c 0%,#071a2d 50%,#030c1a 100%)}
+
+.industry-motif{position:absolute;inset:0;z-index:1;pointer-events:none}
+.industry-motif.technology{background-image:repeating-linear-gradient(60deg,rgba(41,181,232,0.05) 0px,transparent 1px,transparent 24px),repeating-linear-gradient(120deg,rgba(41,181,232,0.05) 0px,transparent 1px,transparent 24px);background-size:28px 28px}
+
+.sf-bg-arrows{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.sf-bg-arrows::before{content:'';position:absolute;right:-5%;top:10%;width:55%;height:80%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 600'%3E%3Cpath d='M50,0 L350,300 L50,600' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='2' stroke-dasharray='6,8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain,url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 600'%3E%3Cpath d='M100,30 L370,300 L100,570' fill='none' stroke='rgba(255,255,255,0.04)' stroke-width='2' stroke-dasharray='6,8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain}
+.sf-bg-wave-br{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.sf-bg-wave-br::before{content:'';position:absolute;bottom:-10%;right:-10%;width:80%;height:70%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Cpath d='M0,500 Q200,350 400,300 T800,100' fill='none' stroke='rgba(41,181,232,0.08)' stroke-width='2' stroke-dasharray='5,10' stroke-linecap='round'/%3E%3Cpath d='M0,500 Q200,380 400,340 T800,160' fill='none' stroke='rgba(41,181,232,0.05)' stroke-width='1.5' stroke-dasharray='4,12' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain}
+.sf-bg-wave-tl{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.sf-bg-wave-tl::before{content:'';position:absolute;top:-10%;left:-10%;width:80%;height:70%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500'%3E%3Cpath d='M800,0 Q600,150 400,200 T0,400' fill='none' stroke='rgba(41,181,232,0.08)' stroke-width='2' stroke-dasharray='5,10' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center/contain}
+.sf-accent-bar-left{position:absolute;top:0;left:0;bottom:0;width:6px;z-index:2;background:var(--sf-blue)}
+.sf-bg-watermark{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.sf-bg-watermark::before{content:'';position:absolute;right:-8%;bottom:-15%;width:45%;height:80%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 61,25 83,25 66,40 72,62 50,50 28,62 34,40 17,25 39,25' fill='none' stroke='rgba(41,181,232,0.04)' stroke-width='0.5'/%3E%3C/svg%3E") no-repeat center/contain;opacity:0.6}
+
+.slide-content{position:relative;z-index:10;width:90%;max-width:1300px;padding:clamp(0.8rem,1.5vw,1.2rem) 0 clamp(1.2rem,2vw,1.8rem)}
+.label{font-size:clamp(0.65rem,0.9vw,0.82rem);font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--sf-blue);margin-bottom:clamp(0.4rem,0.7vw,0.6rem);display:flex;align-items:center;gap:0.5rem}
+.label::before{content:'';display:inline-block;width:18px;height:2px;background:var(--sf-blue);border-radius:1px}
+h1{font-size:clamp(2.8rem,5.5vw,5rem);font-weight:900;line-height:1.0;color:#fff;letter-spacing:-0.04em}
+h1 em{color:var(--sf-blue);font-style:normal}
+h2{font-size:clamp(1.5rem,2.4vw,2.2rem);font-weight:800;line-height:1.15;color:#fff;letter-spacing:-0.025em}
+h2 em{color:var(--sf-blue);font-style:normal}
+p{font-size:clamp(0.82rem,1vw,0.95rem);font-weight:400;color:rgba(255,255,255,0.7);line-height:1.55;max-width:800px}
+.rule{width:40px;height:3px;background:linear-gradient(90deg,var(--sf-blue),var(--sf-star));border-radius:2px;margin:0.6rem 0}
+.title-tagline{font-size:clamp(0.9rem,1.2vw,1.1rem);color:rgba(255,255,255,0.4);font-weight:400;margin-top:clamp(0.7rem,1.2vw,1rem);max-width:100%}
+.s1-logos{display:flex;align-items:center;gap:1rem;margin-bottom:2rem}
+.s1-logos img{height:28px;filter:brightness(0) invert(1);opacity:0.85}
+.s1-logos .logo-sep{width:1.5px;height:28px;background:rgba(255,255,255,0.25);border-radius:1px}
+
+.persona-wrap{margin-top:0.8rem;display:flex;align-items:center;gap:0.6rem}
+.persona-label{font-size:clamp(0.58rem,0.78vw,0.7rem);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:rgba(41,181,232,0.7)}
+.persona-select{appearance:none;-webkit-appearance:none;background:rgba(255,255,255,0.06);border:1px solid rgba(41,181,232,0.3);border-radius:8px;color:#fff;font-family:'Inter',sans-serif;font-size:clamp(0.8rem,1.05vw,0.95rem);font-weight:600;padding:clamp(0.35rem,0.6vw,0.5rem) 2rem clamp(0.35rem,0.6vw,0.5rem) clamp(0.7rem,1vw,0.9rem);cursor:pointer;transition:all 0.25s;outline:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1,1 L6,6 L11,1' fill='none' stroke='rgba(41,181,232,0.7)' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.6rem center}
+.persona-select:hover{border-color:rgba(41,181,232,0.6);background-color:rgba(255,255,255,0.08)}
+.persona-select:focus{border-color:var(--sf-blue);box-shadow:0 0 12px rgba(41,181,232,0.2)}
+.persona-select option{background:#0a2540;color:#fff}
+.persona-indicator{display:inline-flex;align-items:center;gap:0.3rem;font-size:clamp(0.58rem,0.78vw,0.68rem);font-weight:600;color:var(--sf-blue);opacity:0;transition:opacity 0.4s;letter-spacing:0.06em}
+.persona-indicator.show{opacity:1}
+
+.card{background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:1rem 1.2rem}
+.card.sf{border-color:rgba(41,181,232,0.25);box-shadow:0 0 30px rgba(41,181,232,0.06)}
+.together{margin-top:0.7rem;background:rgba(41,181,232,0.08);border:1px solid rgba(41,181,232,0.25);backdrop-filter:blur(12px);border-radius:10px;padding:0.55rem 1rem;display:flex;align-items:center;gap:0.8rem}
+.together-badge{font-size:clamp(0.55rem,0.75vw,0.68rem);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--sf-blue);white-space:nowrap}
+.together-text{font-size:clamp(0.85rem,1.1vw,1rem);font-weight:700;color:#fff}
+.together-text em{color:var(--sf-blue);font-style:normal}
+
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin-top:0.8rem}
+
+.proof-card{position:relative;padding:1rem 0 1rem 1.2rem;border-left:3px solid var(--sf-blue)}
+.proof-card:nth-child(2){border-left-color:var(--sf-star)}
+.proof-card:nth-child(3){border-left-color:var(--sf-green)}
+.proof-company{font-size:clamp(0.82rem,1.05vw,0.95rem);font-weight:800;color:#fff}
+.proof-metric{font-size:clamp(1rem,1.4vw,1.25rem);font-weight:900;color:var(--sf-blue);margin-top:0.2rem}
+.proof-quote{font-size:clamp(0.72rem,0.95vw,0.85rem);color:rgba(255,255,255,0.7);margin:0.4rem 0;line-height:1.5;font-style:italic}
+.proof-relevance{font-size:clamp(0.65rem,0.85vw,0.78rem);color:rgba(255,255,255,0.45);line-height:1.5}
+.proof-links{margin-top:0.5rem}
+.proof-link{display:inline-block;font-size:clamp(0.5rem,0.7vw,0.6rem);font-weight:600;padding:0.15rem 0.5rem;border-radius:4px;background:rgba(41,181,232,0.1);border:1px solid rgba(41,181,232,0.25);color:var(--sf-cyan-soft);margin:0.1rem;text-decoration:none;transition:all 0.2s}
+.proof-link:hover{background:rgba(41,181,232,0.25);border-color:rgba(41,181,232,0.5);color:#fff}
+
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:0.8rem}
+.diff-card{background:transparent;border:none;border-top:1px solid rgba(255,255,255,0.06);border-radius:0;padding:0.8rem 0;display:flex;gap:0.8rem;align-items:flex-start}
+.diff-icon{font-size:clamp(1.1rem,1.5vw,1.3rem);flex-shrink:0}
+.diff-body{}
+.diff-title{font-size:clamp(0.8rem,1.05vw,0.95rem);font-weight:800;color:#fff;margin-bottom:clamp(0.2rem,0.4vw,0.3rem)}
+.diff-desc{font-size:clamp(0.72rem,0.95vw,0.85rem);color:rgba(255,255,255,0.55);line-height:1.5}
+
+.two-col-cta{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:0.7rem}
+.section-label{font-size:0.5rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:0.4rem}
+.status-item{display:flex;align-items:center;gap:clamp(0.45rem,0.7vw,0.6rem);font-size:clamp(0.75rem,1vw,0.88rem);color:rgba(255,255,255,0.7);font-weight:500;padding:clamp(0.25rem,0.5vw,0.4rem) 0}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-dot.done{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.5)}
+.status-dot.needed{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3)}
+
+.particles{position:absolute;inset:0;z-index:2;overflow:hidden;pointer-events:none}
+.p{position:absolute;width:2px;height:2px;border-radius:50%;background:var(--sf-blue);opacity:0;animation:float-p 9s infinite}
+@keyframes float-p{0%{opacity:0;transform:translateY(0) scale(1)}15%{opacity:0.7}85%{opacity:0.15}100%{opacity:0;transform:translateY(-95vh) scale(0.4)}}
+
+.ctrl-wrap{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1.8rem;opacity:0;transition:opacity 0.3s;pointer-events:none}
+body:hover .ctrl-wrap{opacity:1}
+#slide-counter-bottom{font-size:clamp(0.7rem,0.9vw,0.82rem);font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.05em}
+.ctrl-arrows{display:flex;gap:0.5rem}
+.btn-arrow{width:36px;height:36px;border-radius:50%;background:transparent;border:1.5px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all 0.2s;font-family:inherit;pointer-events:auto}
+.btn-arrow:hover{border-color:rgba(255,255,255,0.7);color:#fff;background:rgba(255,255,255,0.06)}
+
+.ref-drawer{position:absolute;bottom:0;left:0;right:0;z-index:20;pointer-events:auto;max-height:2.2rem;overflow:hidden;transition:max-height 0.4s ease,background 0.3s ease;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,0.08)}
+.ref-drawer.open{max-height:40vh;overflow-y:auto;background:rgba(0,0,0,0.85)}
+.ref-toggle{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1.2rem;cursor:pointer;user-select:none}
+.ref-toggle span{font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4)}
+.ref-toggle .ref-arrow{font-size:0.6rem;color:rgba(255,255,255,0.3);transition:transform 0.3s ease}
+.ref-drawer.open .ref-arrow{transform:rotate(180deg)}
+.ref-list{padding:0.3rem 1.2rem 1rem}
+.ref-list li{font-size:0.6rem;color:rgba(255,255,255,0.45);line-height:1.7;list-style:none;position:relative;padding-left:1rem}
+.ref-list li::before{content:'';position:absolute;left:0;top:0.55em;width:4px;height:4px;border-radius:50%;background:rgba(41,181,232,0.5)}
+.ref-list a{color:rgba(41,181,232,0.7);text-decoration:none}
+.ref-list a:hover{text-decoration:underline}
+
+.back-btn{display:inline-flex;align-items:center;gap:0.4rem;cursor:pointer;font-size:clamp(0.65rem,0.85vw,0.78rem);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--sf-blue);padding:clamp(0.28rem,0.5vw,0.4rem) clamp(0.7rem,1vw,0.9rem);border-radius:6px;background:rgba(41,181,232,0.1);border:1px solid rgba(41,181,232,0.25);transition:all 0.2s;margin-bottom:clamp(0.6rem,1vw,0.8rem)}
+.back-btn:hover{background:rgba(41,181,232,0.2);border-color:rgba(41,181,232,0.5);color:#fff}
+
+.uc-compare{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:1.2rem 0;border-radius:14px;overflow:hidden}
+.uc-compare-col{padding:clamp(1.2rem,2vw,1.8rem) clamp(1.2rem,2vw,1.8rem);position:relative}
+.uc-compare-col.today{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px 0 0 14px}
+.uc-compare-col.after{background:rgba(41,181,232,0.04);border:1px solid rgba(41,181,232,0.15);border-left:none;border-radius:0 14px 14px 0}
+.uc-compare-tag{display:inline-block;font-size:clamp(0.55rem,0.75vw,0.68rem);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.2rem 0.6rem;border-radius:4px;margin-bottom:clamp(0.8rem,1.2vw,1rem)}
+.uc-compare-tag.today-tag{background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
+.uc-compare-tag.after-tag{background:rgba(41,181,232,0.1);border:1px solid rgba(41,181,232,0.3);color:var(--sf-cyan-soft)}
+.uc-compare-hero{display:flex;align-items:baseline;gap:0.4rem;margin-bottom:clamp(0.6rem,1vw,0.8rem)}
+.uc-compare-num{font-size:clamp(2.8rem,4.5vw,4rem);font-weight:900;letter-spacing:-0.04em;line-height:1;color:var(--sf-blue);text-shadow:0 0 20px rgba(41,181,232,0.3)}
+.uc-compare-num.warn{color:var(--sf-red);text-shadow:0 0 20px rgba(239,68,68,0.2)}
+.uc-compare-unit{font-size:clamp(0.8rem,1.1vw,1rem);font-weight:400;color:rgba(255,255,255,0.4)}
+.uc-compare-narrative{font-size:clamp(0.85rem,1.1vw,1rem);font-weight:700;color:#fff;line-height:1.4;margin-bottom:0.2rem}
+.uc-compare-subtext{font-size:clamp(0.78rem,1vw,0.9rem);font-weight:400;color:rgba(255,255,255,0.6);font-style:italic;margin-bottom:clamp(0.8rem,1.2vw,1rem)}
+.uc-compare-bullets{list-style:none;display:flex;flex-direction:column;gap:0.4rem;padding:0;margin:0}
+.uc-compare-bullets li{position:relative;padding-left:1rem;font-size:clamp(0.7rem,0.92vw,0.82rem);color:rgba(255,255,255,0.7);font-weight:500;line-height:1.45}
+.uc-compare-bullets li::before{content:'\203A';position:absolute;left:0;color:var(--sf-blue);font-weight:700}
+.uc-compare-bullets.muted li::before{color:rgba(255,255,255,0.3);font-weight:700}
+.uc-compare-bullets.muted li{color:rgba(255,255,255,0.55)}
+.uc-detail-footer{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,0.06)}
+.uc-detail-footer .uc-section-title{font-size:clamp(0.6rem,0.82vw,0.72rem);font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:rgba(255,255,255,0.35);margin-bottom:0.5rem}
+.uc-assumptions{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.4rem}
+.uc-assumptions li{font-size:clamp(0.68rem,0.88vw,0.78rem);color:rgba(255,255,255,0.5);line-height:1.5;padding-left:0.7rem;position:relative;border-left:2px solid rgba(41,181,232,0.15)}
+
+.uc-prompt{margin:clamp(0.8rem,1.2vw,1rem) 0;padding:clamp(0.7rem,1.2vw,1rem) clamp(1rem,1.5vw,1.3rem);background:rgba(41,181,232,0.06);border-left:3px solid var(--sf-blue);border-radius:0 8px 8px 0;font-size:clamp(0.75rem,1vw,0.88rem);font-style:italic;color:rgba(255,255,255,0.8);line-height:1.55}
+.uc-prompt-label{font-size:clamp(0.55rem,0.75vw,0.65rem);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--sf-blue);margin-bottom:0.3rem;font-style:normal}
+.uc-section{margin-top:0.7rem}
+.uc-section-title{font-size:clamp(0.58rem,0.78vw,0.7rem);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.5);margin-bottom:clamp(0.4rem,0.6vw,0.5rem)}
+
+.uc-bullet{font-size:0.82rem;color:rgba(255,255,255,0.75);line-height:1.7;margin-bottom:0.4rem;padding-left:1rem;position:relative}
+.uc-bullet::before{content:'\203A';position:absolute;left:0;color:rgba(255,255,255,0.3);font-weight:700}
+.uc-bullet.sf::before{color:var(--sf-blue)}
+.uc-bullet.sf{color:rgba(255,255,255,0.85)}
+
+.arch-wrapper{display:grid;grid-template-columns:minmax(140px,1.2fr) minmax(24px,0.2fr) minmax(280px,3fr) minmax(24px,0.2fr) minmax(130px,1fr);grid-template-rows:auto 1fr;gap:0;align-items:stretch;margin-top:clamp(0.5rem,1.5vw,1.2rem);position:relative;width:100%;padding:0 clamp(0.5rem,2vw,1.5rem);box-sizing:border-box}
+.arch-section-header{font-size:clamp(0.65rem,1vw,0.85rem);letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.55);text-align:center;padding-bottom:clamp(0.6rem,1.2vw,1rem);font-weight:600}
+.arch-section-header.left{text-align:left}
+.arch-section-header.right{text-align:right}
+.arch-section-header.gutter{visibility:hidden}
+.arch-col-left,.arch-col-right{display:flex;flex-direction:column;gap:clamp(0.5rem,1vw,0.8rem);justify-content:center}
+.arch-col-centre{display:flex;flex-direction:column;gap:0;justify-content:center}
+.arch-gutter{position:relative;width:100%;min-width:20px;height:100%;min-height:200px}
+.arch-input-card,.arch-output-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:clamp(8px,1vw,12px);padding:clamp(0.5rem,1vw,0.8rem) clamp(0.6rem,1.2vw,1rem);backdrop-filter:blur(8px);transition:border-color 0.2s,background 0.2s,transform 0.2s}
+.arch-input-card:hover,.arch-output-card:hover{border-color:rgba(41,181,232,0.3);background:rgba(41,181,232,0.04);transform:translateY(-1px)}
+.arch-card-title{font-size:clamp(0.68rem,1.1vw,0.88rem);font-weight:600;color:#fff}
+.arch-orchestrator-box{background:linear-gradient(160deg,rgba(41,181,232,0.03),rgba(255,255,255,0.02));border:1px solid rgba(41,181,232,0.15);border-radius:clamp(10px,1.5vw,16px);padding:clamp(0.7rem,1.5vw,1.2rem);backdrop-filter:blur(12px);box-shadow:0 4px 24px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04)}
+.arch-orchestrator-header{background:linear-gradient(135deg,#11567F,#0D4060);border-radius:10px;padding:0.65rem 1.1rem;display:flex;align-items:center;gap:0.6rem;margin-bottom:0.9rem}
+.arch-orchestrator-header .icon{font-size:clamp(0.8rem,1.1vw,0.95rem);color:#29B5E8}
+.arch-orchestrator-header .title{font-size:clamp(0.82rem,1.15vw,1rem);font-weight:700;color:#fff;letter-spacing:0.02em}
+.arch-agents-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:clamp(0.4rem,0.8vw,0.7rem);margin-bottom:clamp(0.4rem,0.8vw,0.7rem)}
+.arch-agent-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:clamp(6px,0.8vw,10px);padding:clamp(0.4rem,0.8vw,0.65rem) clamp(0.5rem,1vw,0.75rem);transition:border-color 0.2s,background 0.2s}
+.arch-agent-card:hover{border-color:rgba(41,181,232,0.25);background:rgba(41,181,232,0.05)}
+.arch-agent-name{font-size:clamp(0.6rem,0.95vw,0.78rem);font-weight:600;color:#fff}
+.arch-agent-desc{font-size:clamp(0.48rem,0.75vw,0.6rem);color:rgba(255,255,255,0.45);margin-top:0.1rem;line-height:1.4}
+
+.slide-content.scrollable{overflow-y:auto;max-height:calc(100vh - 80px)}
+
+.draft-banner{position:fixed;top:44px;left:0;right:0;z-index:199;display:flex;align-items:center;justify-content:center;gap:1rem;padding:0.5rem 1.5rem;background:rgba(245,158,11,0.15);border-bottom:1px solid rgba(245,158,11,0.3);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.draft-banner-text{font-size:clamp(0.7rem,0.92vw,0.82rem);font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#f59e0b}
+.draft-banner-sub{font-size:clamp(0.65rem,0.85vw,0.78rem);color:rgba(255,255,255,0.6);font-weight:500}
+.draft-banner-btn{font-size:clamp(0.62rem,0.82vw,0.75rem);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:clamp(0.3rem,0.5vw,0.4rem) clamp(0.9rem,1.3vw,1.1rem);border-radius:6px;border:1px solid rgba(34,197,94,0.4);background:rgba(34,197,94,0.12);color:#22c55e;cursor:pointer;transition:all 0.2s}
+.draft-banner-btn:hover{background:rgba(34,197,94,0.25);border-color:rgba(34,197,94,0.7);color:#fff}
+.draft-watermark{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);z-index:150;pointer-events:none;font-size:6rem;font-weight:900;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,158,11,0.06);white-space:nowrap}
+
+@media(max-width:480px){.grid3,.two-col-cta,.diff-grid,.uc-compare,.uc-detail-footer{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="">
+
+<div class="draft-banner" id="draft-banner">
+  <span class="draft-banner-text">IN DRAFT</span>
+  <span class="draft-banner-sub">Please check numbers and framing. Confirm to remove draft status.</span>
+  <button class="draft-banner-btn" onclick="confirmDraft()">Confirm Final</button>
+</div>
+<div class="draft-watermark" id="draft-watermark">DRAFT</div>
+
+<div id="nav-banner">
+  <div class="nav-logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Snowflake_Logo.svg">
+    <span>&times;&nbsp;Frostbyte</span>
+  </div>
+  <div id="nav-sections">
+    <div class="nav-section active" data-section="0" onclick="goSection(0)">
+      <div class="nav-num">1</div><div class="nav-title">Overview</div><div class="nav-dots" id="dots-0"></div>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-section" data-section="1" onclick="goSection(1)">
+      <div class="nav-num">2</div><div class="nav-title">Solution</div><div class="nav-dots" id="dots-1"></div>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-section" data-section="2" onclick="goSection(2)">
+      <div class="nav-num">3</div><div class="nav-title">Why Here</div><div class="nav-dots" id="dots-2"></div>
+    </div>
+  </div>
+  <div id="slide-counter"></div>
+</div>
+
+<!-- S1 TITLE -->
+<div class="slide active" data-main="1" data-sec="0" id="s1">
+  <div class="slide-bg bg-title"></div>
+  <div class="sf-bg-watermark"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="particles" id="p1"></div>
+  <div class="slide-content">
+    <div class="s1-logos">
+      <span style="font-size:1.1rem;font-weight:800;color:rgba(255,255,255,0.85);letter-spacing:0.02em">FROSTBYTE</span>
+      <div class="logo-sep"></div>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Snowflake_Logo.svg" style="height:26px">
+    </div>
+    <div class="label"><span class="persona-swap" data-ceo="Prepared for Chief Executive Officer" data-cmo="Prepared for Chief Marketing Officer" data-cro="Prepared for Chief Revenue Officer" data-chro="Prepared for Chief Human Resources Officer">Prepared for Chief Executive Officer</span></div>
+    <h1>One Platform. Every Agent. <em>One Set of Rules.</em></h1>
+    <div class="rule"></div>
+    <p class="title-tagline">How to put marketing, sales, and people intelligence into governed AI agents — without copying data or losing control.</p>
+    <div class="persona-wrap">
+      <span class="persona-label">Prepared for</span>
+      <select class="persona-select" id="persona-dd" onchange="switchPersona(this.value)">
+        <option value="ceo" selected>Chief Executive Officer</option>
+        <option value="cmo">Chief Marketing Officer</option>
+        <option value="cro">Chief Revenue Officer</option>
+        <option value="chro">Chief Human Resources Officer</option>
+      </select>
+      <span class="persona-indicator" id="p-ind">Deck adapted</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2 INSIGHTS -->
+<div class="slide" data-main="2" data-sec="0" id="s2">
+  <div class="slide-bg bg-context"></div>
+  <div class="sf-bg-wave-tl"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content scrollable" style="display:flex;flex-direction:column;justify-content:center;padding-top:2rem;padding-bottom:2.8rem;">
+    <div class="label">What We're Hearing</div>
+    <h2>What We're Hearing From the C-Suite on Agentic AI</h2>
+    <div class="rule"></div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;margin-top:1.5rem;align-items:start;">
+
+      <!-- Insight 1 -->
+      <div style="padding:0 1.5rem;">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="persona-swap" data-ceo="Every team wants an agent. Nobody wants four copies of the data." data-cmo="Marketing wants its own AI. So does everyone else." data-cro="Every function is spinning up its own AI agent." data-chro="People data is the last thing you want copied into a bot." style="font-size:0.85rem;font-weight:800;color:#fff;margin-bottom:0.5rem;">Every team wants an agent. Nobody wants four copies of the data.</div>
+        <p class="persona-swap" data-ceo="What we hear across the C-suite: agents multiply faster than governance. Each new one is another path to sensitive data." data-cmo="The tension we see: every team builds its own agent on its own copy of the data. Consistency and control erode fast." data-cro="What's shifting: agents are proliferating by function, each with its own data copy and its own blind spots." data-chro="The tension we see: employee and salary data ends up copied into tools nobody governs centrally." style="font-size:0.72rem;color:rgba(255,255,255,0.7);line-height:1.5;">What we hear across the C-suite: agents multiply faster than governance. Each new one is another path to sensitive data.</p>
+        <div style="text-align:center;margin:0.8rem 0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+        </div>
+        <p class="persona-swap" data-ceo="This isn't a tooling decision. It's a control decision." data-cmo="Four agents, four versions of the truth. Nobody trusts the number." data-cro="Every copy is a new risk surface. The board sees one breach, not four demos." data-chro="One mishandled salary field is a headline, not a footnote." style="font-size:0.7rem;color:var(--sf-blue);font-weight:600;line-height:1.5;">This isn't a tooling decision. It's a control decision.</p>
+      </div>
+
+      <div style="width:1px;background:rgba(255,255,255,0.15);align-self:stretch;margin:0 0.2rem;"></div>
+
+      <!-- Insight 2 -->
+      <div style="padding:0 1.5rem;">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="persona-swap" data-ceo="The demo always works. Production is where trust breaks." data-cmo="A slick AI demo is not a marketing system." data-cro="The pilot forecasts beautifully. Then it meets real data." data-chro="A clever HR bot is easy. A trusted one is not." style="font-size:0.85rem;font-weight:800;color:#fff;margin-bottom:0.5rem;">The demo always works. Production is where trust breaks.</div>
+        <p class="persona-swap" data-ceo="What we hear: pilots impress in a room. The gap is auditability, access control, and proving the agent is still accurate next quarter." data-cmo="What's interesting: the demo dazzles, but nobody can audit what it did or trust it at campaign scale." data-cro="The tension we see: forecasts look great in the pilot, then break when they hit governed, real pipeline data." data-chro="What we hear: the bot works until it has to respect who's allowed to see what. That's where most stall." style="font-size:0.72rem;color:rgba(255,255,255,0.7);line-height:1.5;">What we hear: pilots impress in a room. The gap is auditability, access control, and proving the agent is still accurate next quarter.</p>
+        <div style="text-align:center;margin:0.8rem 0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+        </div>
+        <p class="persona-swap" data-ceo="The firms scaling AI already solved trust. Everyone else is still demoing." data-cmo="A demo you can't audit is a risk you can't sign off." data-cro="A forecast you can't trace is a forecast the board discounts." data-chro="Trust is the product. Without it, adoption never comes." style="font-size:0.7rem;color:var(--sf-blue);font-weight:600;line-height:1.5;">The firms scaling AI already solved trust. Everyone else is still demoing.</p>
+      </div>
+
+      <div style="width:1px;background:rgba(255,255,255,0.15);align-self:stretch;margin:0 0.2rem;"></div>
+
+      <!-- Insight 3 -->
+      <div style="padding:0 1.5rem;">
+        <div style="text-align:center;margin-bottom:1rem;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="persona-swap" data-ceo="An agent is only as trusted as the data it can't see." data-cmo="The best agents know what NOT to show." data-cro="Good decisioning depends on governed data, not more of it." data-chro="The hard part is enforcing who sees salary and PII." style="font-size:0.85rem;font-weight:800;color:#fff;margin-bottom:0.5rem;">An agent is only as trusted as the data it can't see.</div>
+        <p class="persona-swap" data-ceo="What we hear: the hard part isn't the model. It's enforcing, at query time, who can see salary, PII, and revenue detail." data-cmo="The tension we see: personalisation needs data, but the same data carries privacy obligations that can't be an afterthought." data-cro="What's shifting: the differentiator is governed access at query time, not the size of the model." data-chro="What we hear: masking and row-level access have to fire automatically, per role, every single query." style="font-size:0.72rem;color:rgba(255,255,255,0.7);line-height:1.5;">What we hear: the hard part isn't the model. It's enforcing, at query time, who can see salary, PII, and revenue detail.</p>
+        <div style="text-align:center;margin:0.8rem 0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+        </div>
+        <p class="persona-swap" data-ceo="Governance can't be a project bolted on later. It has to be the foundation." data-cmo="Personalisation without privacy control is a fine waiting to happen." data-cro="The teams who govern access move faster, not slower." data-chro="Enforced at query time, or not enforced at all." style="font-size:0.7rem;color:var(--sf-blue);font-weight:600;line-height:1.5;">Governance can't be a project bolted on later. It has to be the foundation.</p>
+      </div>
+
+    </div>
+  </div>
+  <div class="ref-drawer" onclick="this.classList.toggle('open')">
+    <div class="ref-toggle">
+      <span class="ref-arrow">&#9650;</span>
+      <span>Insights &amp; Sources</span>
+    </div>
+    <ul class="ref-list">
+      <li><strong style="color:rgba(255,255,255,0.6);">Every team wants an agent:</strong> Snowflake field intelligence</li>
+      <li><strong style="color:rgba(255,255,255,0.6);">Production is where trust breaks:</strong> Snowflake field intelligence</li>
+      <li><strong style="color:rgba(255,255,255,0.6);">Trusted data it can't see:</strong> Snowflake field intelligence</li>
+    </ul>
+  </div>
+</div>
+
+<!-- S3 VALUE HUB -->
+<div class="slide" data-main="3" data-sec="1" id="s3">
+  <div class="slide-bg" style="background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(41,181,232,0.06) 0%,transparent 50%),linear-gradient(160deg,#030d1b 0%,#081b30 50%,#030c1a 100%)"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content scrollable">
+    <div class="label">The Opportunity</div>
+    <h2><em>~$3.4M</em> Annually Across 3 Governed Agents</h2>
+    <div class="rule"></div>
+    <div style="position:relative;width:100%;padding:2rem 0;">
+      <svg viewBox="0 0 900 240" style="width:100%;height:auto;" preserveAspectRatio="xMidYMid meet">
+        <text x="200" y="55" fill="rgba(255,255,255,0.5)" font-size="9" text-anchor="end">Four copies of the data</text>
+        <text x="200" y="120" fill="rgba(255,255,255,0.5)" font-size="9" text-anchor="end">Pilots that break in prod</text>
+        <text x="200" y="185" fill="rgba(255,255,255,0.5)" font-size="9" text-anchor="end">Ungoverned access to PII</text>
+        <path d="M210 55 C310 55 310 120 422 120" fill="none" stroke="rgba(41,181,232,0.25)" stroke-width="1"/>
+        <line x1="210" y1="120" x2="422" y2="120" stroke="rgba(41,181,232,0.3)" stroke-width="1"/>
+        <path d="M210 185 C310 185 310 120 422 120" fill="none" stroke="rgba(41,181,232,0.25)" stroke-width="1"/>
+        <circle cx="440" cy="120" r="18" fill="rgba(41,181,232,0.08)" stroke="rgba(41,181,232,0.35)" stroke-width="1.5"/>
+        <circle cx="440" cy="120" r="5" fill="var(--sf-blue)"/>
+        <line x1="458" y1="120" x2="595" y2="55" stroke="rgba(41,181,232,0.25)" stroke-width="1"/>
+        <line x1="458" y1="120" x2="595" y2="120" stroke="rgba(41,181,232,0.3)" stroke-width="1"/>
+        <line x1="458" y1="120" x2="595" y2="185" stroke="rgba(41,181,232,0.25)" stroke-width="1"/>
+        <!-- UC1 -->
+        <rect x="600" y="40" width="3" height="30" rx="1.5" fill="rgba(41,181,232,0.6)"/>
+        <text x="616" y="53" fill="#fff" font-size="11.5" font-weight="800" text-anchor="start">Campaign Spend Intelligence</text>
+        <text x="616" y="67" fill="rgba(255,255,255,0.4)" font-size="8.5" text-anchor="start">~$1.1M / yr &middot; CMO</text>
+        <rect x="595" y="35" width="280" height="38" rx="6" fill="rgba(41,181,232,0.04)" stroke="rgba(41,181,232,0.2)" stroke-width="1" style="cursor:pointer" onclick="drillInto('uc1')"/>
+        <text x="868" y="58" fill="var(--sf-blue)" font-size="9" font-weight="700" text-anchor="end" style="pointer-events:none">Explore &#8594;</text>
+        <!-- UC2 -->
+        <rect x="600" y="105" width="3" height="30" rx="1.5" fill="rgba(113,211,220,0.5)"/>
+        <text x="616" y="118" fill="#fff" font-size="11.5" font-weight="800" text-anchor="start">Pipeline &amp; Forecast Intelligence</text>
+        <text x="616" y="132" fill="rgba(255,255,255,0.4)" font-size="8.5" text-anchor="start">~$1.4M / yr &middot; CRO</text>
+        <rect x="595" y="100" width="280" height="38" rx="6" fill="rgba(113,211,220,0.04)" stroke="rgba(113,211,220,0.15)" stroke-width="1" style="cursor:pointer" onclick="drillInto('uc2')"/>
+        <text x="868" y="123" fill="#71D3DC" font-size="9" font-weight="700" text-anchor="end" style="pointer-events:none">Explore &#8594;</text>
+        <!-- UC3 -->
+        <rect x="600" y="170" width="3" height="30" rx="1.5" fill="rgba(34,197,94,0.5)"/>
+        <text x="616" y="183" fill="#fff" font-size="11.5" font-weight="800" text-anchor="start">Governed Workforce Intelligence</text>
+        <text x="616" y="197" fill="rgba(255,255,255,0.4)" font-size="8.5" text-anchor="start">~$0.9M / yr &middot; CHRO</text>
+        <rect x="595" y="165" width="280" height="38" rx="6" fill="rgba(34,197,94,0.03)" stroke="rgba(34,197,94,0.15)" stroke-width="1" style="cursor:pointer" onclick="drillInto('uc3')"/>
+        <text x="868" y="188" fill="#22c55e" font-size="9" font-weight="700" text-anchor="end" style="pointer-events:none">Explore &#8594;</text>
+      </svg>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;margin-top:0.5rem;align-items:start;">
+      <div style="padding:0.8rem 0;border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="font-size:clamp(0.68rem,0.9vw,0.8rem);font-weight:700;letter-spacing:0.05em;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">TODAY</div>
+        <p class="uc-bullet">Manual reports rebuilt weekly across teams</p>
+        <p class="uc-bullet">Every function copies data into its own tool</p>
+        <p class="uc-bullet">No proof an agent respects access rules</p>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:rgba(255,255,255,0.15);padding-top:2rem;">&rarr;</div>
+      <div style="padding:0.8rem 0;border-top:1px solid rgba(41,181,232,0.2);">
+        <div style="font-size:clamp(0.68rem,0.9vw,0.8rem);font-weight:700;letter-spacing:0.05em;color:var(--sf-blue);margin-bottom:0.5rem;">WITH SNOWFLAKE</div>
+        <p class="uc-bullet sf">Ask questions in plain language, one governed source</p>
+        <p class="uc-bullet sf">Agents query in place — no data copies</p>
+        <p class="uc-bullet sf">Masking, row-access and audit enforced automatically</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 ARCHITECTURE (LOB) -->
+<div class="slide" data-main="4" data-sec="1" id="s4">
+  <div class="slide-bg bg-diff"></div>
+  <div class="sf-bg-wave-br"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content scrollable">
+    <div class="label">How It Works</div>
+    <h2>Your Data, Connected — <em>No Rip-and-Replace</em></h2>
+    <p style="margin-top:0.4rem;margin-bottom:1.2rem;max-width:700px">Existing systems flow into one governed platform. Agents answer questions in place. Nothing is copied, everything is auditable.</p>
+    <div class="arch-wrapper">
+      <div class="arch-section-header left">Sources</div>
+      <div class="arch-section-header gutter">&nbsp;</div>
+      <div class="arch-section-header">Governed Intelligence Platform</div>
+      <div class="arch-section-header gutter">&nbsp;</div>
+      <div class="arch-section-header right">Outcomes</div>
+      <div class="arch-col-left">
+        <div class="arch-input-card"><div class="arch-card-title">CRM &amp; Sales Data</div></div>
+        <div class="arch-input-card"><div class="arch-card-title">Marketing &amp; Campaign Data</div></div>
+        <div class="arch-input-card"><div class="arch-card-title">HR &amp; People Data</div></div>
+        <div class="arch-input-card"><div class="arch-card-title">Finance &amp; Revenue Data</div></div>
+        <div class="arch-input-card"><div class="arch-card-title">Policy &amp; Document Store</div></div>
+      </div>
+      <div class="arch-gutter"></div>
+      <div class="arch-col-centre">
+        <div class="arch-orchestrator-box">
+          <div class="arch-orchestrator-header">
+            <span class="icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <span class="title">Governed Intelligence Platform</span>
+          </div>
+          <div class="arch-agents-row">
+            <div class="arch-agent-card"><div class="arch-agent-name">Unified Governed Source</div><div class="arch-agent-desc">Single source of truth, no copies</div></div>
+            <div class="arch-agent-card"><div class="arch-agent-name">Plain-Language Answers</div><div class="arch-agent-desc">Ask questions, get governed answers</div></div>
+            <div class="arch-agent-card"><div class="arch-agent-name">Role-Based Access &amp; Masking</div><div class="arch-agent-desc">PII, salary, revenue detail protected</div></div>
+            <div class="arch-agent-card"><div class="arch-agent-name">Marketing / Sales / People Agents</div><div class="arch-agent-desc">Domain-specific intelligence</div></div>
+            <div class="arch-agent-card"><div class="arch-agent-name">Automatic Audit Trail</div><div class="arch-agent-desc">Every query logged, traceable</div></div>
+            <div class="arch-agent-card"><div class="arch-agent-name">Accuracy &amp; Drift Monitoring</div><div class="arch-agent-desc">Continuous trust verification</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="arch-gutter"></div>
+      <div class="arch-col-right">
+        <div class="arch-output-card"><div class="arch-card-title">Campaign Insights</div></div>
+        <div class="arch-output-card"><div class="arch-card-title">Pipeline &amp; Forecast</div></div>
+        <div class="arch-output-card"><div class="arch-card-title">Workforce Signals</div></div>
+        <div class="arch-output-card"><div class="arch-card-title">Audit &amp; Compliance Evidence</div></div>
+      </div>
+    </div>
+    <div class="together" style="margin-top:1.2rem">
+      <span class="together-badge">Key Insight</span>
+      <span class="together-text">Connect systems as they are. Agents query in place, governed the same way, with a full audit trail — no data copies, no rip-and-replace.</span>
+    </div>
+  </div>
+</div>
+
+<!-- S5 CUSTOMER PROOF -->
+<div class="slide" data-main="5" data-sec="2" id="s5">
+  <div class="slide-bg bg-proof"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content">
+    <div class="label">Customer Proof</div>
+    <h2>Peers Who've Made <em>This Shift</em></h2>
+    <div class="rule"></div>
+    <div class="grid3">
+      <div class="proof-card">
+        <div class="proof-company">Governed AI on Snowflake</div>
+        <div class="proof-metric">One platform</div>
+        <p class="proof-quote">"Thousands of organisations run governed AI and analytics on Snowflake — data stays in place, access stays controlled."</p>
+        <p class="proof-relevance">The same governed-agent pattern Frostbyte is standing up here.</p>
+        <div class="proof-links">
+          <a href="https://www.snowflake.com/en/customers/all-customers/" target="_blank" class="proof-link">Customers</a>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-company">Cortex AI</div>
+        <div class="proof-metric">Agents on your data</div>
+        <p class="proof-quote">"Cortex Analyst and Cortex Search let teams ask questions in natural language against governed enterprise data."</p>
+        <p class="proof-relevance">Powers the marketing, sales and HR agents in this brief.</p>
+        <div class="proof-links">
+          <a href="https://www.snowflake.com/en/product/features/cortex/" target="_blank" class="proof-link">Cortex AI</a>
+        </div>
+      </div>
+      <div class="proof-card">
+        <div class="proof-company">Snowflake Horizon</div>
+        <div class="proof-metric">Built-in governance</div>
+        <p class="proof-quote">"Masking, row-access policies and audit are enforced natively — governance is the foundation, not a bolt-on."</p>
+        <p class="proof-relevance">The trust layer beneath every agent in this demo.</p>
+        <div class="proof-links">
+          <a href="https://www.snowflake.com/en/product/features/horizon/" target="_blank" class="proof-link">Horizon</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 WHY THIS WORKS HERE -->
+<div class="slide" data-main="6" data-sec="2" id="s6">
+  <div class="slide-bg bg-diff"></div>
+  <div class="sf-accent-bar-left"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content">
+    <div class="label">Why This Works Here</div>
+    <h2>Your Data Is the <em>Defensible Advantage</em></h2>
+    <div class="rule"></div>
+    <div class="diff-grid">
+      <div class="diff-card">
+        <div class="diff-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg></div>
+        <div class="diff-body">
+          <div class="diff-title">Enterprise Context, Not a Cold Start</div>
+          <div class="diff-desc">Your data is already here, governed and trusted. Agents built on it start with enterprise truth, not a blank slate.</div>
+        </div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+        <div class="diff-body">
+          <div class="diff-title">Governance Without a Separate Project</div>
+          <div class="diff-desc">Every agent action is access-controlled, masked, and audited automatically. No bolt-on governance workstream.</div>
+        </div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+        <div class="diff-body">
+          <div class="diff-title">Works With What You Already Run</div>
+          <div class="diff-desc">Connect existing tools, any cloud, any AI model. Investment scales with value, not vendor lock-in.</div>
+        </div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--sf-blue)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="diff-body">
+          <div class="diff-title">Models Change, Your Context Doesn't</div>
+          <div class="diff-desc">Models are interchangeable. Your governed data, policies and context are the durable, defensible layer.</div>
+        </div>
+      </div>
+    </div>
+    <div class="together" style="margin-top:0.8rem;">
+      <div class="together-badge">Trust</div>
+      <div class="together-text">Governance, one copy of the data, and a full audit trail — the same foundation under every agent.</div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 CTA -->
+<div class="slide" data-main="7" data-sec="2" id="s7">
+  <div class="slide-bg bg-cta"></div>
+  <div class="sf-bg-arrows"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="particles" id="p-cta"></div>
+  <div class="slide-content" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+    <div class="label" style="justify-content:center;">Next Step</div>
+    <h2 class="persona-swap" data-ceo="Stand Up One Governed Agent — On Your Data" data-cmo="Stand Up One Governed Agent — On Your Data" data-cro="Stand Up One Governed Agent — On Your Data" data-chro="Stand Up One Governed Agent — On Your Data">Stand Up One Governed Agent — On Your Data</h2>
+    <div class="rule" style="margin:0.8rem auto;"></div>
+    <p style="text-align:center;max-width:650px;">Not another slide. A working proof point: one agent, your data, governance enforced, in a room together.</p>
+    <div class="two-col-cta" style="text-align:left;max-width:900px;width:100%;">
+      <div class="card sf">
+        <div class="section-label" style="color:var(--sf-blue);">Snowflake Delivers</div>
+        <div class="status-item"><span class="status-dot done"></span>Governed multi-agent reference pattern</div>
+        <div class="status-item"><span class="status-dot done"></span>Cortex-powered agents (marketing / sales / HR)</div>
+        <div class="status-item"><span class="status-dot done"></span>Masking, row-access, PII audit, drift monitoring</div>
+      </div>
+      <div class="card">
+        <div class="section-label">Frostbyte Provides</div>
+        <div class="status-item"><span class="status-dot needed"></span>A sample dataset and one use case</div>
+        <div class="status-item"><span class="status-dot needed"></span>Access to a data/platform lead</div>
+        <div class="status-item"><span class="status-dot needed"></span>Half a day, the right people in the room</div>
+      </div>
+    </div>
+    <div class="together" style="margin-top:1rem;max-width:900px;width:100%;justify-content:center;">
+      <div class="together-badge">The Ask</div>
+      <div class="together-text"><span class="persona-swap" data-ceo="30 minutes to walk your leadership team through the governed-agent pattern and pick the first use case." data-cmo="30 minutes to scope a marketing agent on your campaign data." data-cro="30 minutes to scope a pipeline/forecast agent on your CRM data." data-chro="30 minutes to scope a governed people-analytics agent with PII enforced.">30 minutes to walk your leadership team through the governed-agent pattern and pick the first use case.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DRILL-DOWN UC1 -->
+<div class="slide" data-drill="uc1" id="d-uc1">
+  <div class="slide-bg bg-uc"></div>
+  <div class="industry-motif technology"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content scrollable">
+    <div class="back-btn" onclick="drillBack()">&#8592; Back to Value Summary</div>
+    <div class="label">Use Case 1</div>
+    <h2>Campaign Spend <em>Intelligence</em></h2>
+    <p>Marketing asks performance questions in plain language against one governed source, and reallocates wasted spend instead of rebuilding reports.</p>
+    <div class="uc-compare">
+      <div class="uc-compare-col today">
+        <div class="uc-compare-tag today-tag">&#9679; Today</div>
+        <div class="uc-compare-hero"><span class="uc-compare-num warn">8</span><span class="uc-compare-unit">hrs / week</span></div>
+        <div class="uc-compare-narrative"><strong>Reports rebuilt by hand.</strong></div>
+        <div class="uc-compare-subtext">The answer arrives after the decision.</div>
+        <ul class="uc-compare-bullets muted">
+          <li class="persona-swap-block" data-ceo="<li>Analysts rebuild dashboards weekly instead of analysing spend</li><li>Marketing decisions made on stale, last-week numbers</li><li>No single view of which channels actually convert</li>" data-cmo="<li>Five analysts spend half their time rebuilding the same report</li><li>Campaign pivots wait for data that arrives too late</li><li>Attribution is a guess, not a governed answer</li>" data-cro="<li>Pipeline influenced by marketing is impossible to trace</li><li>Revenue attribution lags behind the quarter close</li><li>No shared language between marketing and sales data</li>" data-chro="<li>Headcount requests tied to marketing ROI lack evidence</li><li>Hiring plans can't be validated against real spend outcomes</li><li>Cross-team reporting creates duplicated effort</li>">Analysts rebuild dashboards weekly instead of analysing spend</li>
+          <li>Marketing decisions made on stale, last-week numbers</li>
+          <li>No single view of which channels actually convert</li>
+        </ul>
+      </div>
+      <div class="uc-compare-col after">
+        <div class="uc-compare-tag after-tag">&#9670; With Snowflake</div>
+        <div class="uc-compare-hero"><span class="uc-compare-num">30</span><span class="uc-compare-unit">seconds</span></div>
+        <div class="uc-compare-narrative"><strong>Ask and get the answer.</strong></div>
+        <div class="uc-compare-subtext">Spend shifts to what's working, mid-flight.</div>
+        <ul class="uc-compare-bullets">
+          <li class="persona-swap-block" data-ceo="<li>Plain-language questions answered instantly from governed data</li><li>Spend reallocated mid-campaign based on live performance</li><li>Full audit trail on every marketing data query</li>" data-cmo="<li>Ask any campaign question and get an governed answer in seconds</li><li>Reallocate spend mid-flight based on what is actually converting</li><li>Every answer traced, auditable, board-ready</li>" data-cro="<li>Marketing-influenced pipeline visible and traceable in real time</li><li>Shared attribution model between marketing and sales</li><li>Revenue impact of spend visible without waiting on ops</li>" data-chro="<li>Marketing team capacity freed from report-building to strategy</li><li>Headcount justification backed by governed performance data</li><li>Cross-functional reporting unified, not duplicated</li>">Plain-language questions answered instantly from governed data</li>
+          <li>Spend reallocated mid-campaign based on live performance</li>
+          <li>Full audit trail on every marketing data query</li>
+        </ul>
+      </div>
+    </div>
+    <div class="uc-prompt">
+      <div class="uc-prompt-label">Sample Question to the Platform</div>
+      "<span class="persona-swap" data-ceo="Which marketing channels drove the most qualified pipeline last quarter, and where are we overspending relative to conversion?" data-cmo="Which campaigns drove the most qualified pipeline last quarter, and where are we overspending with no return?" data-cro="Show me marketing-sourced pipeline by channel this quarter and flag any spend with zero closed-won attribution." data-chro="What is the cost per marketing hire in terms of campaign spend efficiency, and which teams are over-resourced on reporting?">Which marketing channels drove the most qualified pipeline last quarter, and where are we overspending relative to conversion?</span>"
+    </div>
+    <div class="uc-detail-footer">
+      <div class="uc-section">
+        <div class="uc-section-title">Assumptions</div>
+        <ul class="uc-assumptions">
+          <li>5 marketing analysts on reporting</li>
+          <li>~$25M annual marketing spend</li>
+          <li>48 working weeks/yr</li>
+          <li>$67/hr fully-loaded analyst rate</li>
+        </ul>
+      </div>
+      <div class="uc-section">
+        <div class="uc-section-title">Use Case Math</div>
+        <ul class="uc-assumptions">
+          <li>5 analysts x 8 hrs/wk x 48 wks = 1,920 hrs on reporting</li>
+          <li>50% reduction = 960 hrs recovered = ~$64K at $67/hr</li>
+          <li>$25M spend x ~3% reallocated x ~50% realization = ~$1.0M</li>
+          <li>Total = ~$1.1M / yr</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRILL-DOWN UC2 -->
+<div class="slide" data-drill="uc2" id="d-uc2">
+  <div class="slide-bg bg-uc"></div>
+  <div class="industry-motif technology"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content scrollable">
+    <div class="back-btn" onclick="drillBack()">&#8592; Back to Value Summary</div>
+    <div class="label">Use Case 2</div>
+    <h2>Pipeline &amp; Forecast <em>Intelligence</em></h2>
+    <p>Reps and leaders self-serve pipeline and forecast answers from governed data, without waiting on sales ops.</p>
+    <div class="uc-compare">
+      <div class="uc-compare-col today">
+        <div class="uc-compare-tag today-tag">&#9679; Today</div>
+        <div class="uc-compare-hero"><span class="uc-compare-num warn">3</span><span class="uc-compare-unit">days</span></div>
+        <div class="uc-compare-narrative"><strong>Wait on ops for the number.</strong></div>
+        <div class="uc-compare-subtext">By the time it lands, the deal moved.</div>
+        <ul class="uc-compare-bullets muted">
+          <li>Sales ops spends 10+ hrs/week rebuilding forecast views</li>
+          <li>Reps wait days for pipeline answers that are already stale</li>
+          <li>No governed, traceable forecast the board can trust</li>
+        </ul>
+      </div>
+      <div class="uc-compare-col after">
+        <div class="uc-compare-tag after-tag">&#9670; With Snowflake</div>
+        <div class="uc-compare-hero"><span class="uc-compare-num">instant</span><span class="uc-compare-unit">self-serve</span></div>
+        <div class="uc-compare-narrative"><strong>The number, on demand.</strong></div>
+        <div class="uc-compare-subtext">Governed, traceable, board-ready.</div>
+        <ul class="uc-compare-bullets">
+          <li>Reps and leaders ask pipeline questions and get governed answers instantly</li>
+          <li>Forecast risk surfaced automatically by region and rep</li>
+          <li>Every number traceable, auditable, ready for the board</li>
+        </ul>
+      </div>
+    </div>
+    <div class="uc-prompt">
+      <div class="uc-prompt-label">Sample Question to the Platform</div>
+      "<span class="persona-swap" data-ceo="What is our forecast risk this quarter by region, and which deals slipped versus last quarter's commit?" data-cmo="Which marketing-sourced deals are at risk this quarter and what was the last campaign touch?" data-cro="Show me forecast risk this quarter by region and rep, and which deals slipped from last quarter." data-chro="Which sales teams are most at risk of missing target, and does headcount correlate with pipeline coverage?">What is our forecast risk this quarter by region, and which deals slipped versus last quarter's commit?</span>"
+    </div>
+    <div class="uc-detail-footer">
+      <div class="uc-section">
+        <div class="uc-section-title">Assumptions</div>
+        <ul class="uc-assumptions">
+          <li>4-person sales ops team</li>
+          <li>~$150M annual new bookings</li>
+          <li>48 working weeks/yr</li>
+          <li>$67/hr fully-loaded rate</li>
+        </ul>
+      </div>
+      <div class="uc-section">
+        <div class="uc-section-title">Use Case Math</div>
+        <ul class="uc-assumptions">
+          <li>4 ops x 10 hrs/wk x 48 = 1,920 hrs on reporting</li>
+          <li>60% reduction = 1,152 hrs = ~$77K</li>
+          <li>$150M bookings x 1% win-rate lift x 75% realization = ~$1.1M</li>
+          <li>Total = ~$1.4M / yr</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRILL-DOWN UC3 -->
+<div class="slide" data-drill="uc3" id="d-uc3">
+  <div class="slide-bg bg-uc"></div>
+  <div class="industry-motif technology"></div>
+  <div class="overlay overlay-vignette"></div>
+  <div class="slide-content scrollable">
+    <div class="back-btn" onclick="drillBack()">&#8592; Back to Value Summary</div>
+    <div class="label">Use Case 3</div>
+    <h2>Governed Workforce <em>Intelligence</em></h2>
+    <p>People analytics where salary and PII masking plus row-level access are enforced automatically, per role, on every query.</p>
+    <div class="uc-compare">
+      <div class="uc-compare-col today">
+        <div class="uc-compare-tag today-tag">&#9679; Today</div>
+        <div class="uc-compare-hero"><span class="uc-compare-num warn">$960K</span><span class="uc-compare-unit">annual attrition cost</span></div>
+        <div class="uc-compare-narrative"><strong>Attrition spotted too late.</strong></div>
+        <div class="uc-compare-subtext">And PII copied into tools nobody governs.</div>
+        <ul class="uc-compare-bullets muted">
+          <li>Attrition signals invisible until the resignation arrives</li>
+          <li>Salary and PII data copied into ungoverned spreadsheets</li>
+          <li>No way to prove who accessed what employee data</li>
+        </ul>
+      </div>
+      <div class="uc-compare-col after">
+        <div class="uc-compare-tag after-tag">&#9670; With Snowflake</div>
+        <div class="uc-compare-hero"><span class="uc-compare-num">0</span><span class="uc-compare-unit">ungoverned copies</span></div>
+        <div class="uc-compare-narrative"><strong>Signals early. Data governed.</strong></div>
+        <div class="uc-compare-subtext">Salary and PII masked by role, automatically.</div>
+        <ul class="uc-compare-bullets">
+          <li>Attrition risk surfaced early with governed people signals</li>
+          <li>Salary and PII masked automatically per role on every query</li>
+          <li>Full audit trail on every people-data access</li>
+        </ul>
+      </div>
+    </div>
+    <div class="uc-prompt">
+      <div class="uc-prompt-label">Sample Question to the Platform</div>
+      "<span class="persona-swap" data-ceo="Which business units show the highest attrition risk this quarter, and what is the estimated replacement cost exposure?" data-cmo="Which marketing teams have the highest attrition risk, and how does that correlate with campaign delivery capacity?" data-cro="Which sales teams are at risk of losing top performers, and what is the pipeline exposure if they leave?" data-chro="Which teams show the highest attrition risk this quarter — without exposing individual salaries to anyone unauthorised?">Which business units show the highest attrition risk this quarter, and what is the estimated replacement cost exposure?</span>"
+    </div>
+    <div class="uc-detail-footer">
+      <div class="uc-section">
+        <div class="uc-section-title">Assumptions</div>
+        <ul class="uc-assumptions">
+          <li>1,200 employees, ~12% attrition</li>
+          <li>~$40K cost per replacement</li>
+          <li>Salary/PII masking enforced at query time</li>
+          <li>$67/hr fully-loaded HR analyst rate</li>
+        </ul>
+      </div>
+      <div class="uc-section">
+        <div class="uc-section-title">Use Case Math</div>
+        <ul class="uc-assumptions">
+          <li>1,200 x 12% = 144 leavers/yr; cost = ~$5.8M exposure</li>
+          <li>2pp attrition reduction = 24 fewer x $40K = $960K x 40% prob = $384K</li>
+          <li>Reporting: 432 hrs recovered = ~$29K; PII risk avoidance = ~$120K x prob</li>
+          <li>Total = ~$0.9M / yr</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="ctrl-wrap" id="main-ctrl">
+  <div id="slide-counter-bottom"></div>
+  <div class="ctrl-arrows">
+    <button class="btn-arrow" onclick="go(cur-1)">&#8592;</button>
+    <button class="btn-arrow" onclick="go(cur+1)">&#8594;</button>
+  </div>
+</div>
+
+<script>
+var SECTIONS=[{name:'Overview',slides:[1,2]},{name:'Solution',slides:[3,4]},{name:'Why Here',slides:[5,6,7]}];
+var MAIN_TOTAL=7;
+var cur=1;
+var inDrill=false;
+
+function getSec(n){for(var i=0;i<SECTIONS.length;i++){if(SECTIONS[i].slides.indexOf(n)!==-1)return i}return 0}
+
+function buildDots(){
+  SECTIONS.forEach(function(sec,si){
+    var c=document.getElementById('dots-'+si);
+    c.innerHTML='';
+    sec.slides.forEach(function(sn){
+      var d=document.createElement('div');
+      d.className='nav-dot'+(sn===cur?' active':'');
+      d.onclick=(function(n){return function(e){e.stopPropagation();go(n)}})(sn);
+      c.appendChild(d);
+    });
+  });
+}
+
+function updateNav(){
+  var si=getSec(cur);
+  document.querySelectorAll('.nav-section').forEach(function(el){
+    el.classList.toggle('active',parseInt(el.dataset.section)===si);
+  });
+  buildDots();
+  document.getElementById('slide-counter').textContent=cur+' / '+MAIN_TOTAL;
+  document.getElementById('slide-counter-bottom').textContent=cur+' / '+MAIN_TOTAL;
+}
+
+function hideAll(){
+  document.querySelectorAll('.slide').forEach(function(s){s.classList.remove('active')});
+}
+
+function go(n){
+  if(inDrill)return;
+  hideAll();
+  cur=Math.max(1,Math.min(MAIN_TOTAL,n));
+  document.getElementById('s'+cur).classList.add('active');
+  updateNav();
+  document.getElementById('main-ctrl').style.display='';
+}
+
+function goSection(si){
+  if(inDrill)drillBack();
+  go(SECTIONS[si].slides[0]);
+}
+
+function drillInto(ucId){
+  hideAll();
+  inDrill=true;
+  document.getElementById('d-'+ucId).classList.add('active');
+  document.getElementById('main-ctrl').style.display='none';
+  var labels={'uc1':'UC 1','uc2':'UC 2','uc3':'UC 3'};
+  document.getElementById('slide-counter').textContent=(labels[ucId]||ucId)+' Detail';
+}
+
+function drillBack(){
+  hideAll();
+  inDrill=false;
+  document.getElementById('s'+cur).classList.add('active');
+  document.getElementById('main-ctrl').style.display='';
+  updateNav();
+}
+
+function toggleFS(){
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+document.addEventListener('keydown',function(e){
+  if(inDrill){
+    if(e.key==='Escape'||e.key==='ArrowLeft'||e.key==='Backspace'){e.preventDefault();drillBack()}
+    return;
+  }
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(cur+1)}
+  else if(e.key==='ArrowLeft')go(cur-1);
+  else if(e.key.toLowerCase()==='f')toggleFS();
+});
+
+(function initParticles(){
+  var ids=['p1','p-cta'];
+  ids.forEach(function(id){
+    var el=document.getElementById(id);if(!el)return;
+    for(var i=0;i<20;i++){
+      var d=document.createElement('div');d.className='p';
+      d.style.left=Math.random()*100+'%';
+      d.style.animationDelay=Math.random()*9+'s';
+      d.style.animationDuration=(7+Math.random()*5)+'s';
+      d.style.width=d.style.height=(1+Math.random()*2)+'px';
+      el.appendChild(d);
+    }
+  });
+})();
+
+function confirmDraft(){
+  document.getElementById('draft-banner').style.display='none';
+  document.getElementById('draft-watermark').style.display='none';
+  document.querySelectorAll('.slide').forEach(function(s){s.style.paddingTop='44px'});
+}
+
+var PERSONAS={ceo:{name:'The Board',title:'Chief Executive Officer'},cmo:{name:'Marketing',title:'Chief Marketing Officer'},cro:{name:'Revenue',title:'Chief Revenue Officer'},chro:{name:'People',title:'Chief Human Resources Officer'}};
+
+function switchPersona(key){
+  document.querySelectorAll('.persona-swap').forEach(function(el){
+    if(el.dataset[key]!==undefined){el.textContent=el.dataset[key]}
+  });
+  document.querySelectorAll('.persona-swap-block').forEach(function(el){
+    if(el.dataset[key]!==undefined){el.innerHTML=el.dataset[key]}
+  });
+  var ind=document.getElementById('p-ind');
+  if(ind){ind.classList.add('show');setTimeout(function(){ind.classList.remove('show')},2000)}
+}
+
+updateNav();
+</script>
+</body>
+</html>
