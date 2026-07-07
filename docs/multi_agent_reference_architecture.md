@@ -4,7 +4,7 @@
 **Status:** Current as of July 2026. Capabilities validated against Snowflake product docs; forward-looking gaps are labeled by confidence.
 **Companion demo:** The `multi-agent-pipeline/` project in this repo (Frostbyte ELT) is the reference implementation for Pattern 1.
 
-> **Confidence tags used throughout:** `[VALIDATED]` = confirmed in Snowflake docs or this repo · `[INFERENCE]` = absence-of-feature deduction, confirm before quoting · `[NEEDS INTERNAL VALIDATION]` = check Jira/Slack/roadmap.
+> **Confidence tags used throughout:** `[VALIDATED]` = confirmed in Snowflake docs or this repo · `[FIELD-VALIDATED]` = confirmed via internal Jira/Slack, not yet in public docs · `[INFERENCE]` = absence-of-feature deduction, confirm before quoting · `[NEEDS INTERNAL VALIDATION]` = check Jira/Slack/roadmap.
 
 ---
 
@@ -89,7 +89,7 @@ There is no native "call agent B from agent A" tool type. Two validated approach
 
 **Guidance.** Use the **MCP tool** method when context must flow (multi-tenant, external, least-privilege) - this is what the Frostbyte repo uses. Use **procedure-wrapped** when you need input/output transformation or deliberate privilege boundaries. `[VALIDATED]`
 
-**Gaps.** `[INFERENCE]` No native agent-to-agent tool type; `[VALIDATED]` owner's-rights wrapper procedures reset caller context (session variables do not inherit - section 6).
+**Gaps.** `[FIELD-VALIDATED]` No native agent-to-agent tool type (orchestrator -> managed MCP -> sub-agent is the field-standard pattern); `[VALIDATED]` owner's-rights wrapper procedures reset caller context (session variables do not inherit - section 6).
 
 **Demo hook.** The existing `multi-agent-pipeline/` project - show the *before* (monolith spec) vs *after* (router + 3 MCP sub-agents + skill).
 
@@ -169,7 +169,7 @@ flowchart LR
 - **Snowflake as tool consumer:** a Snowflake agent uses an external MCP server as a tool (MCP connectors). `[VALIDATED]`
 - **AI Gateway:** customers front multiple platforms with a gateway for routing, rate limiting, and centralized observability. Snowflake has **no built-in gateway** - this is an external component. `[INFERENCE]`
 
-**A2A (Google Agent2Agent).** `[INFERENCE]` Snowflake has **no native A2A support** today. **MCP is the interoperability bridge.** If a customer standardizes on A2A, position an external A2A-to-MCP adapter and flag it as `[NEEDS INTERNAL VALIDATION]` against roadmap.
+**A2A (Google Agent2Agent).** `[FIELD-VALIDATED]` Snowflake has **no native A2A support** today, and it is **not on the roadmap** (confirmed in field/Slack, Jun 2026). **MCP is the interoperability bridge.** If a customer standardizes on A2A, position an external A2A-to-MCP adapter and flag it as `[NEEDS INTERNAL VALIDATION]` against roadmap.
 
 **Demo hook.** A small external orchestrator (e.g., LangGraph) calling the Snowflake router over MCP.
 
@@ -239,7 +239,7 @@ Frostbyte runs the same agents across NA / EMEA / JP but needs region-specific i
 
 ### 6.5 Audit & observability
 
-Agent interactions are written to `SNOWFLAKE.LOCAL.AI_OBSERVABILITY_EVENTS` (content redacted by default; viewing requires an explicit grant). Use the `MONITOR` privilege on an agent to inspect its threads, logs, and traces. For Model B, correlate Snowflake-side activity (all under the one service user) with app-side per-user logs, since Snowflake sees only the service identity.
+Agent interactions are written to `SNOWFLAKE.LOCAL.AI_OBSERVABILITY_EVENTS` (content redacted by default; viewing requires an explicit grant). Use the `MONITOR` privilege on an agent to inspect its threads, logs, and traces. For Model B, correlate Snowflake-side activity (all under the one service user) with app-side per-user logs, since Snowflake sees only the service identity. **Multi-agent caveat:** sub-agents invoked over MCP currently run without a thread/parent-child link back to the orchestrator, so each surfaces as an independent trace — pass a shared correlation ID to stitch runs together (section 7.1).
 
 ---
 
@@ -254,12 +254,13 @@ Agent interactions are written to `SNOWFLAKE.LOCAL.AI_OBSERVABILITY_EVENTS` (con
 | No per-skill RBAC at selection time | `[VALIDATED-NUANCED]` | Local/global | `CURRENT_ROLE()` branch in skill (advisory) + RBAC/RAP behind it |
 | Owner's-rights wrapper procs reset caller context | `[VALIDATED]` | P1 delegation | Prefer MCP-tool delegation; or re-forward context in proc |
 | OAuth not supported for SPCS-hosted MCP external clients | `[VALIDATED]` | P2, P4 | Use managed MCP servers (OAuth) for external clients |
-| No native agent-to-agent tool type | `[INFERENCE]` | P1 | Procedure-wrapped or MCP-tool delegation |
-| No native A2A (Agent2Agent) support | `[INFERENCE]` | P4 | MCP as the bridge; external A2A-to-MCP adapter |
+| No native agent-to-agent tool type | `[FIELD-VALIDATED]` | P1 | Procedure-wrapped or MCP-tool delegation (orchestrator agent -> managed MCP -> sub-agent is the field-standard pattern) |
+| No native A2A (Agent2Agent) support | `[FIELD-VALIDATED]` | P4 | MCP as the bridge; external A2A-to-MCP adapter. Confirmed not on roadmap (Slack, Jun 2026) |
 | No built-in AI gateway / routing layer | `[INFERENCE]` | P4 | External gateway (routing, rate-limit, observability) |
 | No automatic session-variable inheritance across owner's-rights boundary | `[INFERENCE]` | P1, P3 | Re-forward variables explicitly; prefer caller's-rights path |
 | Chart rendering (`data_to_chart`) does not propagate through MCP | `[VALIDATED]` | P2, P4 | Render charts client-side from returned data; charts only in CoWork/native surfaces |
-| MCP transport timeout (~60s) is fixed/not configurable; long queries return Gateway Timeout | `[VALIDATED]` | P2, P4 | Keep tool calls under ~60s; see workaround in SNOW-3440878 |
+| Anthropic proxy enforces a ~60s idle timeout on Claude-proxied MCP calls (missing `claude/channel` keep-alive); long orchestrations return "operation timed out" client-side even though Snowflake completes | `[FIELD-VALIDATED]` | P2, P4 | **Resolved per SNOW-3440878** (keep-alive/progress notifications). For non-Claude clients on long orchestrations, stream progress or call the `agent:run` REST API directly |
+| Sub-agent runs invoked over MCP have no thread / parent-child linkage to the orchestrator run; each appears as an independent trace | `[FIELD-VALIDATED]` | P1, observability | Pass a shared correlation ID in the prompt/variables and join app-side; native linkage roadmap TBD |
 | CoWork main agent not yet callable via API | `[NEEDS INTERNAL VALIDATION]` | P2, P4 | Roadmap: main agent to be exposed via APIs by end of month |
 | Agent identity for auditing: cannot fully audit actions an agent takes on behalf of a user | `[NEEDS INTERNAL VALIDATION]` | Governance / observability | Correlate app-side per-user logs with Snowflake events; roadmap PLT-56536 |
 
